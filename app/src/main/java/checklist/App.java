@@ -9,7 +9,17 @@ import java.util.stream.Collectors;
 public class App {
     public static final String CREATE_COMMAND = "create";
 
+    private final File workDir;
+
     public static void main(String[] args) {
+        new App(new File(".")).run(args);
+    }
+
+    public App(File workDir) {
+        this.workDir = workDir;
+    }
+
+    void run(String[] args) {
         if (args.length == 0) {
             printHelp();
             System.exit(1);
@@ -27,21 +37,21 @@ public class App {
         }
     }
 
-    private static void printHelp() {
+    private void printHelp() {
         // TODO print help message and usage to stderr
     }
 
-    private static void create(List<String> args) {
+    private void create(List<String> args) {
         if (args.isEmpty()) {
             // TODO print command usage
             return;
         }
         String name = args.get(0);
-        File file = new File(name + ".checklist");
+        File file = new File(workDir, name + ".checklist");
         try {
             file.createNewFile();
             // TODO use text IO
-            System.err.println(String.format("Checklist '%s' created", file.getPath()));
+            System.err.println(String.format("Checklist '%s' created", file.getName()));
         } catch (IOException ex) {
             throw new RuntimeException(ex);
         }
