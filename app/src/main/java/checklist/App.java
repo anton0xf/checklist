@@ -47,6 +47,7 @@ public class App {
             return;
         }
         String name = args.get(0);
+        // TODO don't add extension if it is already passed
         File file = new File(workDir, name + ".checklist");
         try {
             file.createNewFile();

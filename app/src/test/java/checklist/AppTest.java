@@ -38,6 +38,7 @@ class AppTest {
         try {
             run.accept(dir.toFile());
         } finally {
+            // TODO extract to utils
             Files.walk(dir)
                     .map(Path::toFile)
                     .sorted(Comparator.reverseOrder())
