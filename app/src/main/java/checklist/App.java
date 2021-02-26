@@ -1,5 +1,8 @@
 package checklist;
 
+import checklist.io.ConsoleTextIO;
+import checklist.io.TextIO;
+
 import java.io.File;
 import java.io.IOException;
 import java.util.Arrays;
@@ -10,13 +13,18 @@ public class App {
     public static final String CREATE_COMMAND = "create";
 
     private final File workDir;
+    private final TextIO io;
 
     public static void main(String[] args) {
-        new App(new File(".")).run(args);
+        File workDir = new File(".");
+        ConsoleTextIO io = new ConsoleTextIO();
+        App app = new App(workDir, io);
+        app.run(args);
     }
 
-    public App(File workDir) {
+    public App(File workDir, TextIO io) {
         this.workDir = workDir;
+        this.io = io;
     }
 
     void run(String[] args) {
@@ -51,8 +59,7 @@ public class App {
         File file = new File(workDir, name + ".checklist");
         try {
             file.createNewFile();
-            // TODO use text IO
-            System.err.println(String.format("Checklist '%s' created", file.getName()));
+            io.printWarn(String.format("Checklist '%s' created", file.getName()));
         } catch (IOException ex) {
             throw new RuntimeException(ex);
         }

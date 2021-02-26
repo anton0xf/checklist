@@ -1,8 +1,6 @@
 package checklist;
 
-import checklist.io.ConsoleLogger;
-import checklist.io.FileSystemUtils;
-import checklist.io.Logger;
+import checklist.io.*;
 import io.vavr.CheckedConsumer;
 import org.junit.jupiter.api.Test;
 
@@ -21,7 +19,8 @@ class AppTest {
     void create() throws Throwable {
         withinTempDir((workDir) -> {
             String[] args = {"create", "buy"};
-            String out = tapSystemErrNormalized(() -> new App(workDir).run(args));
+            TextIO io = new ConsoleTextIO();
+            String out = tapSystemErrNormalized(() -> new App(workDir, io).run(args));
             assertEquals("Checklist 'buy.checklist' created\n", out);
             assertTrue(new File(workDir, "buy.checklist").exists());
             // TODO check file content
