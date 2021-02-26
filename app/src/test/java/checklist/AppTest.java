@@ -1,18 +1,14 @@
 package checklist;
 
 import checklist.io.ConsoleLogger;
+import checklist.io.FileSystemUtils;
 import checklist.io.Logger;
 import io.vavr.CheckedConsumer;
-import io.vavr.CheckedRunnable;
-import io.vavr.control.Try;
 import org.junit.jupiter.api.Test;
 
 import java.io.File;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.Arrays;
-import java.util.Comparator;
-import java.util.stream.Collectors;
 
 import static com.github.stefanbirkner.systemlambda.SystemLambda.tapSystemErrNormalized;
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -38,11 +34,7 @@ class AppTest {
         try {
             run.accept(dir.toFile());
         } finally {
-            // TODO extract to utils
-            Files.walk(dir)
-                    .map(Path::toFile)
-                    .sorted(Comparator.reverseOrder())
-                    .forEach(File::delete);
+            FileSystemUtils.rmDir(dir);
             LOG.debug(() -> String.format("Temp dir '%s' deleted", dir));
         }
     }
