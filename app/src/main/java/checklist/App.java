@@ -11,6 +11,7 @@ import java.util.stream.Collectors;
 
 public class App {
     public static final String CREATE_COMMAND = "create";
+    public static final String FILE_EXTENSION = ".checklist";
 
     private final File workDir;
     private final TextIO io;
@@ -55,13 +56,16 @@ public class App {
             return;
         }
         String name = args.get(0);
-        // TODO don't add extension if it is already passed
-        File file = new File(workDir, name + ".checklist");
+        File file = new File(workDir, createFileName(name));
         try {
             file.createNewFile();
             io.printWarn(String.format("Checklist '%s' created", file.getName()));
         } catch (IOException ex) {
             throw new RuntimeException(ex);
         }
+    }
+
+    static String createFileName(String name) {
+        return name.endsWith(FILE_EXTENSION) ? name : name + FILE_EXTENSION;
     }
 }

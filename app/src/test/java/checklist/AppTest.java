@@ -27,6 +27,7 @@ class AppTest {
         });
     }
 
+    // TODO move to TestUtils
     private void withinTempDir(CheckedConsumer<File> run) throws Throwable {
         Path dir = Files.createTempDirectory("checklist-test-");
         LOG.debug(() -> String.format("Create temp dir '%s'", dir));
@@ -36,5 +37,11 @@ class AppTest {
             FileSystemUtils.rmDir(dir);
             LOG.debug(() -> String.format("Temp dir '%s' deleted", dir));
         }
+    }
+
+    @Test
+    public void createFileName() {
+        assertEquals("asdf.checklist", App.createFileName("asdf"));
+        assertEquals("asdf.checklist", App.createFileName("asdf.checklist"));
     }
 }
