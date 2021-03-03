@@ -4,6 +4,7 @@ import checklist.io.*;
 import org.junit.jupiter.api.Test;
 
 import java.io.File;
+import java.nio.file.Files;
 
 import static com.github.stefanbirkner.systemlambda.SystemLambda.tapSystemErrNormalized;
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -17,8 +18,9 @@ class AppTest {
             TextIO io = new ConsoleTextIO();
             String out = tapSystemErrNormalized(() -> new App(workDir, io).run(args));
             assertEquals("Checklist 'buy.checklist' created\n", out);
-            assertTrue(new File(workDir, "buy.checklist").exists());
-            // TODO check file content
+            File file = new File(workDir, "buy.checklist");
+            assertTrue(file.exists());
+            assertEquals("{}", Files.readString(file.toPath()));
         });
     }
 

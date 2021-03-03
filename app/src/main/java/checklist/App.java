@@ -1,9 +1,12 @@
 package checklist;
 
 import checklist.io.ConsoleTextIO;
+import checklist.io.FileIO;
 import checklist.io.TextIO;
 
+import java.io.BufferedOutputStream;
 import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.List;
@@ -59,6 +62,7 @@ public class App {
         File file = new File(workDir, createFileName(name));
         try {
             file.createNewFile();
+            FileIO.write("{}", file);
             io.printWarn(String.format("Checklist '%s' created", file.getName()));
         } catch (IOException ex) {
             throw new RuntimeException(ex);
