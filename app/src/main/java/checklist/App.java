@@ -4,9 +4,7 @@ import checklist.io.ConsoleTextIO;
 import checklist.io.FileIO;
 import checklist.io.TextIO;
 
-import java.io.BufferedOutputStream;
 import java.io.File;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.List;
@@ -58,18 +56,24 @@ public class App {
             // TODO print command usage
             return;
         }
-        String name = args.get(0);
-        File file = new File(workDir, createFileName(name));
+        String name = removeFileExtension(args.get(0));
+        File file = new File(workDir, addFileExtension(name));
         try {
             file.createNewFile();
-            FileIO.write("{}", file);
+            FileIO.write(String.format("{\"name\":\"%s\"}", name), file);
             io.printWarn(String.format("Checklist '%s' created", file.getName()));
         } catch (IOException ex) {
             throw new RuntimeException(ex);
         }
     }
 
-    static String createFileName(String name) {
-        return name.endsWith(FILE_EXTENSION) ? name : name + FILE_EXTENSION;
+    static String removeFileExtension(String name) {
+        return name.endsWith(FILE_EXTENSION)
+                ? name.substring(0, name.length() - FILE_EXTENSION.length())
+                : name;
+    }
+
+    static String addFileExtension(String name) {
+        return name + FILE_EXTENSION;
     }
 }
