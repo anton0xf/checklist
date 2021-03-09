@@ -49,6 +49,7 @@ public class App {
 
     private void printHelp() {
         // TODO print help message and usage to stderr
+        io.printWarn("no args");
     }
 
     private void create(List<String> args) {
