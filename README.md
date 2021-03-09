@@ -2,7 +2,10 @@
 simple checklist CLI app
 
 ## run
-TODO how to run?
+TODO how to pass args?
+```shell
+./gradlew run
+```
 
 ## test
 ```shell
