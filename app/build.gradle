@@ -9,6 +9,8 @@
 plugins {
     // Apply the application plugin to add support for building a CLI application in Java.
     id 'application'
+    // see https://imperceptiblethoughts.com/shadow/
+    id "com.github.johnrengelman.shadow" version "6.1.0"
 }
 
 repositories {
@@ -36,6 +38,11 @@ dependencies {
 application {
     // Define the main class for the application.
     mainClass = 'checklist.App'
+}
+
+shadow {
+    // TODO remove when PR will be released (6.2): https://github.com/johnrengelman/shadow/pull/612
+    mainClassName = application.mainClass.get()
 }
 
 tasks.named('test') {

@@ -12,18 +12,19 @@ $ ./gradlew run --args "create test"
 Or build jar and run it:
 ```shell
 $ ./gradlew jar
-$ java -cp app/build/libs/app.jar checklist.App create test.checklist
-> Checklist 'test.checklist' created
+$ java -cp app/build/libs/app.jar checklist.App create test
 ```
 Or create distribution (also use `./gradlew dist{Zip,Tar}`), extract it and run generated script.
 Or create same application image in `build/install` and run generated script: 
 ```shell
 $ ./gradlew installDist
 $ ./app/build/install/app/bin/app create test
-> Checklist 'test.checklist' created
 ```
-
-TODO fat-jar
+ Or create and run fat-jar:
+```shell
+$ ./gradlew shadowRun
+$ java -jar app/build/libs/app-all.jar create test
+```
 
 ## test
 ```shell
