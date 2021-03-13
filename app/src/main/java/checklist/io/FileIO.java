@@ -3,18 +3,23 @@ package checklist.io;
 import java.io.*;
 import java.nio.charset.StandardCharsets;
 
-// TODO separate to interface and implementation
-// TODO use wrapper instead of util?
-public class FileIO {
-    public static void write(String str, File file) {
-        try (OutputStreamWriter out = makeOut(file)) {
+public class FileIO implements IO {
+    private final File file;
+
+    public FileIO(File file) {
+        this.file = file;
+    }
+
+    @Override
+    public void write(String str) {
+        try (OutputStreamWriter out = createWriter()) {
             out.write(str);
         } catch (IOException ex) {
             throw new RuntimeException(String.format("Can not write to '%s'", file.getPath()), ex);
         }
     }
 
-    private static OutputStreamWriter makeOut(File file) {
+    private OutputStreamWriter createWriter() {
         try {
             return new OutputStreamWriter(new BufferedOutputStream(new FileOutputStream(file)), StandardCharsets.UTF_8);
         } catch (FileNotFoundException ex) {

@@ -61,7 +61,7 @@ public class App {
         File file = new File(workDir, addFileExtension(name));
         try {
             file.createNewFile();
-            FileIO.write(String.format("{\"name\":\"%s\"}", name), file);
+            new FileIO(file).write(String.format("{\"name\":\"%s\"}", name));
             io.printWarn(String.format("Checklist '%s' created", file.getName()));
         } catch (IOException ex) {
             throw new RuntimeException(ex);
