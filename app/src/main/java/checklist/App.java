@@ -1,14 +1,12 @@
 package checklist;
 
+import java.io.File;
+import java.io.IOException;
+
 import checklist.io.ConsoleTextIO;
 import checklist.io.FileIO;
 import checklist.io.TextIO;
-
-import java.io.File;
-import java.io.IOException;
-import java.util.Arrays;
-import java.util.List;
-import java.util.stream.Collectors;
+import io.vavr.collection.List;
 
 public class App {
     public static final String CREATE_COMMAND = "create";
@@ -35,9 +33,7 @@ public class App {
             System.exit(1);
         }
         String command = args[0];
-        List<String> commandArgs = Arrays.stream(args)
-                .skip(1)
-                .collect(Collectors.toList());
+        List<String> commandArgs = List.of(args).tail();
         switch (command) {
             case CREATE_COMMAND -> create(commandArgs);
             default -> {
