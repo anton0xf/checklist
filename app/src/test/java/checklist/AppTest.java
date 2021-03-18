@@ -1,10 +1,12 @@
 package checklist;
 
-import checklist.io.*;
-import org.junit.jupiter.api.Test;
-
 import java.io.File;
 import java.nio.file.Files;
+
+import org.junit.jupiter.api.Test;
+
+import checklist.io.ConsoleTextIO;
+import checklist.io.TextIO;
 
 import static com.github.stefanbirkner.systemlambda.SystemLambda.tapSystemErrNormalized;
 import static org.junit.jupiter.api.Assertions.assertEquals;
