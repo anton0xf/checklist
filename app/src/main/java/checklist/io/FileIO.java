@@ -1,5 +1,7 @@
 package checklist.io;
 
+import io.vavr.CheckedConsumer;
+
 import java.io.*;
 import java.nio.charset.StandardCharsets;
 
@@ -11,10 +13,10 @@ public class FileIO implements IO {
     }
 
     @Override
-    public void write(String str) {
+    public void write(CheckedConsumer<Writer> fn) {
         try (OutputStreamWriter out = createWriter()) {
-            out.write(str);
-        } catch (IOException ex) {
+            fn.accept(out);
+        } catch (Throwable ex) {
             throw new RuntimeException(String.format("Can not write to '%s'", file.getPath()), ex);
         }
     }

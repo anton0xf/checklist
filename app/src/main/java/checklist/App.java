@@ -1,12 +1,14 @@
 package checklist;
 
-import java.io.File;
-import java.io.IOException;
-
 import checklist.io.ConsoleTextIO;
 import checklist.io.FileIO;
 import checklist.io.TextIO;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 import io.vavr.collection.List;
+
+import java.io.File;
+import java.io.IOException;
 
 public class App {
     public static final String CREATE_COMMAND = "create";
@@ -57,7 +59,9 @@ public class App {
         File file = new File(workDir, addFileExtension(name));
         try {
             file.createNewFile();
-            new FileIO(file).write(String.format("{\"name\":\"%s\"}", name));
+            ObjectMapper mapper = new ObjectMapper();
+            ObjectNode checklist = mapper.createObjectNode().put("name", name);
+            new FileIO(file).write(out -> mapper.writer().writeValue(out, checklist));
             io.printWarn(String.format("Checklist '%s' created", file.getName()));
         } catch (IOException ex) {
             throw new RuntimeException(ex);
