@@ -3,6 +3,10 @@ package checklist;
 import java.io.File;
 import java.nio.file.Files;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 import org.junit.jupiter.api.Test;
 
 import checklist.io.ConsoleTextIO;
@@ -13,6 +17,9 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class AppTest {
+    // TODO extract to ObjectMapperFactory
+    private final ObjectMapper MAPPER = new ObjectMapper();
+
     @Test
     void create() throws Throwable {
         TestUtils.withTempDir((workDir) -> {
@@ -22,8 +29,14 @@ class AppTest {
             assertEquals("Checklist 'buy.checklist' created\n", out);
             File file = new File(workDir, "buy.checklist");
             assertTrue(file.exists());
-            assertEquals("{\"name\":\"buy\"}", Files.readString(file.toPath()));
+            // TODO extract Checklist model
+            assertJsonEquals(MAPPER.createObjectNode().put("name", "buy"),
+                    Files.readString(file.toPath()));
         });
+    }
+
+    private void assertJsonEquals(JsonNode expected, String actualStr) throws JsonProcessingException {
+        assertEquals(expected, MAPPER.reader().readTree(actualStr));
     }
 
     @Test

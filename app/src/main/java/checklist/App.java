@@ -56,10 +56,13 @@ public class App {
             return;
         }
         String name = removeFileExtension(args.get(0));
+        // TODO encapsulate storage
         File file = new File(workDir, addFileExtension(name));
         try {
             file.createNewFile();
+            // TODO extract to ObjectMapperFactory
             ObjectMapper mapper = new ObjectMapper();
+            // TODO extract Checklist model
             ObjectNode checklist = mapper.createObjectNode().put("name", name);
             new FileIO(file).write(out -> mapper.writer().writeValue(out, checklist));
             io.printWarn(String.format("Checklist '%s' created", file.getName()));
