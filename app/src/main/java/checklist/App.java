@@ -3,6 +3,7 @@ package checklist;
 import checklist.io.ConsoleTextIO;
 import checklist.io.FileIO;
 import checklist.io.TextIO;
+import checklist.json.ObjectMapperFactory;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import io.vavr.collection.List;
@@ -60,8 +61,7 @@ public class App {
         File file = new File(workDir, addFileExtension(name));
         try {
             file.createNewFile();
-            // TODO extract to ObjectMapperFactory
-            ObjectMapper mapper = new ObjectMapper();
+            ObjectMapper mapper = ObjectMapperFactory.createMapper();
             // TODO extract Checklist model
             ObjectNode checklist = mapper.createObjectNode().put("name", name);
             new FileIO(file).write(out -> mapper.writer().writeValue(out, checklist));

@@ -3,6 +3,7 @@ package checklist;
 import java.io.File;
 import java.nio.file.Files;
 
+import checklist.json.ObjectMapperFactory;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -17,8 +18,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class AppTest {
-    // TODO extract to ObjectMapperFactory
-    private final ObjectMapper MAPPER = new ObjectMapper();
+    private final ObjectMapper MAPPER = ObjectMapperFactory.createMapper();
 
     @Test
     void create() throws Throwable {
