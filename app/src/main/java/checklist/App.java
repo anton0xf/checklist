@@ -4,6 +4,7 @@ import checklist.io.ConsoleTextIO;
 import checklist.io.FileIO;
 import checklist.io.TextIO;
 import checklist.json.ObjectMapperFactory;
+import checklist.util.RandomHashGenerator;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import io.vavr.collection.List;
@@ -14,19 +15,24 @@ import java.io.IOException;
 public class App {
     public static final String CREATE_COMMAND = "create";
     public static final String FILE_EXTENSION = ".checklist";
+    public static final int ID_HASH_SIZE = 16;
 
+    // TODO move workDir (supplier?) and hashGenerator to storage
     private final File workDir;
+    private final RandomHashGenerator hashGenerator;
     private final TextIO io;
 
     public static void main(String[] args) {
         File workDir = new File(".");
+        RandomHashGenerator hashGenerator = new RandomHashGenerator();
         ConsoleTextIO io = new ConsoleTextIO();
-        App app = new App(workDir, io);
+        App app = new App(workDir, hashGenerator, io);
         app.run(args);
     }
 
-    public App(File workDir, TextIO io) {
+    public App(File workDir, RandomHashGenerator hashGenerator, TextIO io) {
         this.workDir = workDir;
+        this.hashGenerator = hashGenerator;
         this.io = io;
     }
 
@@ -63,7 +69,10 @@ public class App {
             file.createNewFile();
             ObjectMapper mapper = ObjectMapperFactory.createMapper();
             // TODO extract Checklist model
-            ObjectNode checklist = mapper.createObjectNode().put("name", name);
+            ObjectNode checklist = mapper.createObjectNode()
+                    .put("name", name)
+                    // unique id for future synchronization
+                    .put("id", hashGenerator.next(ID_HASH_SIZE));
             new FileIO(file).write(out -> mapper.writer().writeValue(out, checklist));
             io.printWarn(String.format("Checklist '%s' created", file.getName()));
         } catch (IOException ex) {

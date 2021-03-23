@@ -2,8 +2,10 @@ package checklist;
 
 import java.io.File;
 import java.nio.file.Files;
+import java.util.Random;
 
 import checklist.json.ObjectMapperFactory;
+import checklist.util.RandomHashGenerator;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -23,15 +25,36 @@ class AppTest {
     @Test
     void create() throws Throwable {
         TestUtils.withTempDir((workDir) -> {
-            String[] args = {"create", "buy"};
+            RandomHashGenerator hashGenerator = new RandomHashGenerator(new Random(0));
             TextIO io = new ConsoleTextIO();
-            String out = tapSystemErrNormalized(() -> new App(workDir, io).run(args));
+            App app = new App(workDir, hashGenerator, io);
+            String out = tapSystemErrNormalized(() -> app.run(new String[]{"create", "buy"}));
+
             assertEquals("Checklist 'buy.checklist' created\n", out);
             File file = new File(workDir, "buy.checklist");
             assertTrue(file.exists());
             // TODO extract Checklist model
-            assertJsonEquals(MAPPER.createObjectNode().put("name", "buy"),
-                    Files.readString(file.toPath()));
+            ObjectNode expected = MAPPER.createObjectNode()
+                    .put("name", "buy")
+                    .put("id", "60b420bb3851d9d4");
+            assertJsonEquals(expected, Files.readString(file.toPath()));
+        });
+    }
+
+    @Test
+    void createOther() throws Throwable {
+        TestUtils.withTempDir((workDir) -> {
+            RandomHashGenerator hashGenerator = new RandomHashGenerator(new Random(1));
+            TextIO io = new ConsoleTextIO();
+            App app = new App(workDir, hashGenerator, io);
+            String out = tapSystemErrNormalized(() -> app.run(new String[]{"create", "test.checklist"}));
+
+            assertEquals("Checklist 'test.checklist' created\n", out);
+            // TODO extract Checklist model
+            ObjectNode expected = MAPPER.createObjectNode()
+                    .put("name", "test")
+                    .put("id", "73d51abbd89cb819");
+            assertJsonEquals(expected, Files.readString(new File(workDir, "test.checklist").toPath()));
         });
     }
 
