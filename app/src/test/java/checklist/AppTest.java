@@ -33,7 +33,6 @@ class AppTest {
             assertEquals("Checklist 'buy.checklist' created\n", out);
             File file = new File(workDir, "buy.checklist");
             assertTrue(file.exists());
-            // TODO extract Checklist model
             ObjectNode expected = MAPPER.createObjectNode()
                     .put("name", "buy")
                     .put("id", "60b420bb3851d9d4");
@@ -50,7 +49,6 @@ class AppTest {
             String out = tapSystemErrNormalized(() -> app.run(new String[]{"create", "test.checklist"}));
 
             assertEquals("Checklist 'test.checklist' created\n", out);
-            // TODO extract Checklist model
             ObjectNode expected = MAPPER.createObjectNode()
                     .put("name", "test")
                     .put("id", "73d51abbd89cb819");

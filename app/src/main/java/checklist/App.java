@@ -1,5 +1,6 @@
 package checklist;
 
+import checklist.domain.Checklist;
 import checklist.io.ConsoleTextIO;
 import checklist.io.FileIO;
 import checklist.io.TextIO;
@@ -68,11 +69,9 @@ public class App {
         try {
             file.createNewFile();
             ObjectMapper mapper = ObjectMapperFactory.createMapper();
-            // TODO extract Checklist model
-            ObjectNode checklist = mapper.createObjectNode()
-                    .put("name", name)
-                    // unique id for future synchronization
-                    .put("id", hashGenerator.next(ID_HASH_SIZE));
+            String id = hashGenerator.next(ID_HASH_SIZE);
+            Checklist checklist = new Checklist(id, name);
+            // TODO separate model from store
             new FileIO(file).write(out -> mapper.writer().writeValue(out, checklist));
             io.printWarn(String.format("Checklist '%s' created", file.getName()));
         } catch (IOException ex) {
