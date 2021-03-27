@@ -10,4 +10,14 @@ public class StoredString implements StoredEntity {
     public String get() {
         return value;
     }
+
+    @Override
+    public void visit(StoredEntityVisitor visitor) {
+        visitor.visitString(this);
+    }
+
+    @Override
+    public String getString() {
+        return get();
+    }
 }

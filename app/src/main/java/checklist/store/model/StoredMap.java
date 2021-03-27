@@ -34,7 +34,18 @@ public class StoredMap implements StoredEntity {
         return map.keySet();
     }
 
-    public Option<StoredEntity> get(String key) {
-        return map.get(key);
+    public StoredEntity get(String key) {
+        return map.get(key)
+                .getOrElseThrow(() -> new RuntimeException("Map does not contain key '" + key + "'"));
+    }
+
+    @Override
+    public void visit(StoredEntityVisitor visitor) {
+        visitor.visitMap(this);
+    }
+
+    @Override
+    public String getString() {
+        throw new UnsupportedOperationException("It is map, not string");
     }
 }
