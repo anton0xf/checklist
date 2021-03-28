@@ -1,17 +1,17 @@
 package checklist;
 
+import java.io.File;
+import java.io.IOException;
+
+import com.fasterxml.jackson.databind.ObjectMapper;
+
 import checklist.domain.Checklist;
 import checklist.io.ConsoleTextIO;
 import checklist.io.FileIO;
 import checklist.io.TextIO;
 import checklist.json.ObjectMapperFactory;
 import checklist.util.RandomHashGenerator;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.node.ObjectNode;
 import io.vavr.collection.List;
-
-import java.io.File;
-import java.io.IOException;
 
 public class App {
     public static final String CREATE_COMMAND = "create";

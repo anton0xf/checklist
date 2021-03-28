@@ -4,16 +4,17 @@ import java.io.File;
 import java.nio.file.Files;
 import java.util.Random;
 
-import checklist.json.ObjectMapperFactory;
-import checklist.util.RandomHashGenerator;
+import org.junit.jupiter.api.Test;
+
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
-import org.junit.jupiter.api.Test;
 
 import checklist.io.ConsoleTextIO;
 import checklist.io.TextIO;
+import checklist.json.ObjectMapperFactory;
+import checklist.util.RandomHashGenerator;
 
 import static com.github.stefanbirkner.systemlambda.SystemLambda.tapSystemErrNormalized;
 import static org.junit.jupiter.api.Assertions.assertEquals;

@@ -7,7 +7,9 @@ import java.util.function.Supplier;
  */
 public interface Logger {
     void debug(String str);
+
     void info(String str);
+
     void warn(String str);
 
     /**

@@ -1,13 +1,13 @@
 package checklist;
 
+import java.io.File;
+import java.nio.file.Files;
+import java.nio.file.Path;
+
 import checklist.io.ConsoleLogger;
 import checklist.io.FileSystemUtils;
 import checklist.io.Logger;
 import io.vavr.CheckedConsumer;
-
-import java.io.File;
-import java.nio.file.Files;
-import java.nio.file.Path;
 
 public class TestUtils {
     private static final Logger LOG = new ConsoleLogger(true);

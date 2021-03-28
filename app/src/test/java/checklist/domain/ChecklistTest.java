@@ -1,8 +1,9 @@
 package checklist.domain;
 
+import org.junit.jupiter.api.Test;
+
 import checklist.store.model.StoredMap;
 import checklist.util.StoredEntitiesAssertions;
-import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.junit.jupiter.api.Assertions.assertEquals;

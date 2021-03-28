@@ -1,8 +1,8 @@
 package checklist.io;
 
-import io.vavr.CheckedConsumer;
-
 import java.io.Writer;
+
+import io.vavr.CheckedConsumer;
 
 public interface IO {
     void write(CheckedConsumer<Writer> fn);

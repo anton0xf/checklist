@@ -5,7 +5,6 @@ import io.vavr.collection.HashMap;
 import io.vavr.collection.Iterator;
 import io.vavr.collection.Map;
 import io.vavr.collection.Set;
-import io.vavr.control.Option;
 
 public class StoredMap implements StoredEntity {
     private final Map<String, StoredEntity> map;

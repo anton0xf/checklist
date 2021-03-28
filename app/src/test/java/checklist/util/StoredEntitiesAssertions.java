@@ -1,10 +1,11 @@
 package checklist.util;
 
+import org.junit.jupiter.api.Assertions;
+
 import checklist.store.model.StoredEntity;
 import checklist.store.model.StoredEntityVisitor;
 import checklist.store.model.StoredMap;
 import checklist.store.model.StoredString;
-import org.junit.jupiter.api.Assertions;
 
 // TODO test it
 public class StoredEntitiesAssertions {
