@@ -22,7 +22,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class AppTest {
-    private final ObjectMapper MAPPER = new ObjectMapperFactory().createMapper();
+    private static final ObjectMapper MAPPER = new ObjectMapperFactory().createMapper();
 
     @Test
     void create() throws Throwable {

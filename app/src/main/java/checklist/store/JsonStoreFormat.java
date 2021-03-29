@@ -31,8 +31,7 @@ public class JsonStoreFormat implements StoreFormat {
         throw new UnsupportedOperationException("Unimplemented yet");
     }
 
-    // TODO test it
-    private JsonNode entityToJsonNode(StoredEntity entity) {
+    JsonNode entityToJsonNode(StoredEntity entity) {
         final JsonNodeFactory nodeFactory = mapper.getNodeFactory();
         return entity.visit(new StoredEntityVisitor<>() {
             @Override
