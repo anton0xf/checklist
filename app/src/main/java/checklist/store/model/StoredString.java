@@ -12,8 +12,8 @@ public class StoredString implements StoredEntity {
     }
 
     @Override
-    public void visit(StoredEntityVisitor visitor) {
-        visitor.visitString(this);
+    public <R> R visit(StoredEntityVisitor<R> visitor) {
+        return visitor.visitString(this);
     }
 
     @Override

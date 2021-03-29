@@ -1,7 +1,7 @@
 package checklist.store.model;
 
-public interface StoredEntityVisitor {
-    void visitString(StoredString str);
+public interface StoredEntityVisitor<R> {
+    R visitString(StoredString str);
 
-    void visitMap(StoredMap map);
+    R visitMap(StoredMap map);
 }

@@ -7,7 +7,6 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.JsonNodeFactory;
 import com.fasterxml.jackson.databind.node.ObjectNode;
-import com.fasterxml.jackson.databind.node.TextNode;
 
 import checklist.io.FileIO;
 import checklist.json.ObjectMapperFactory;
@@ -15,7 +14,6 @@ import checklist.store.model.StoredEntity;
 import checklist.store.model.StoredEntityVisitor;
 import checklist.store.model.StoredMap;
 import checklist.store.model.StoredString;
-import checklist.util.Box;
 import io.vavr.control.Either;
 
 // TODO extract FileStore superclass
@@ -62,22 +60,18 @@ public class ChecklistStore implements Store {
 
     private JsonNode entityToJsonNode(StoredEntity entity) {
         final JsonNodeFactory nodeFactory = mapper.getNodeFactory();
-        final Box<JsonNode> res = new Box<>();
-        entity.visit(new StoredEntityVisitor() {
+        return entity.visit(new StoredEntityVisitor<>() {
             @Override
-            public void visitString(StoredString str) {
-                String value = str.get();
-                TextNode textNode = nodeFactory.textNode(value);
-                res.set(textNode);
+            public JsonNode visitString(StoredString str) {
+                return nodeFactory.textNode(str.get());
             }
 
             @Override
-            public void visitMap(StoredMap map) {
+            public JsonNode visitMap(StoredMap map) {
                 ObjectNode obj = nodeFactory.objectNode();
                 map.iterator().forEach(kv -> obj.set(kv._1, entityToJsonNode(kv._2)));
-                res.set(obj);
+                return obj;
             }
         });
-        return res.get();
     }
 }

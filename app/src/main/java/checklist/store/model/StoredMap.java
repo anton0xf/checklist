@@ -39,8 +39,8 @@ public class StoredMap implements StoredEntity {
     }
 
     @Override
-    public void visit(StoredEntityVisitor visitor) {
-        visitor.visitMap(this);
+    public <R> R visit(StoredEntityVisitor<R> visitor) {
+        return visitor.visitMap(this);
     }
 
     @Override

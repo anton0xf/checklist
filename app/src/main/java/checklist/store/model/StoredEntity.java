@@ -1,7 +1,7 @@
 package checklist.store.model;
 
 public interface StoredEntity {
-    void visit(StoredEntityVisitor visitor);
+    <R> R visit(StoredEntityVisitor<R> visitor);
 
     String getString();
 }

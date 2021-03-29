@@ -15,17 +15,19 @@ public class StoredEntitiesAssertions {
 
     public static void assertEquals(String msg, StoredEntity expected, StoredEntity actual) {
         Assertions.assertAll(msg,
-                () -> expected.visit(new StoredEntityVisitor() {
+                () -> expected.visit(new StoredEntityVisitor<Void>() {
                     @Override
-                    public void visitString(StoredString str) {
+                    public Void visitString(StoredString str) {
                         AssertionsUtils.assertInstanceOf(actual, StoredString.class,
                                 actualStr -> Assertions.assertEquals(str.get(), actualStr.get()));
+                        return null;
                     }
 
                     @Override
-                    public void visitMap(StoredMap map) {
+                    public Void visitMap(StoredMap map) {
                         AssertionsUtils.assertInstanceOf(actual, StoredMap.class,
                                 actualMap -> assertEquals(map, actualMap));
+                        return null;
                     }
                 }));
     }
