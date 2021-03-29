@@ -1,6 +1,6 @@
 package checklist.store;
 
-import checklist.domain.Checklist;
+import checklist.store.model.StoredEntity;
 import io.vavr.control.Either;
 
 public interface Store {
@@ -12,5 +12,5 @@ public interface Store {
     /**
      * Save entity and return actual path or error
      */
-    Either<String, String> save(String path, Checklist checklist);
+    Either<String, String> save(String path, StoredEntity entity);
 }
