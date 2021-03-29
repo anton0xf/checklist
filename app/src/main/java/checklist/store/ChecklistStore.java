@@ -14,12 +14,15 @@ import checklist.json.ObjectMapperFactory;
 public class ChecklistStore implements Store {
     public static final String FILE_EXTENSION = ".checklist";
 
+    // TODO get rid of IO
     private final TextIO io;
     private final File workDir;
+    private final ObjectMapper mapper;
 
-    public ChecklistStore(TextIO io, File workDir) {
+    public ChecklistStore(TextIO io, File workDir, ObjectMapperFactory objectMapperFactory) {
         this.io = io;
         this.workDir = workDir;
+        this.mapper = objectMapperFactory.createMapper();
     }
 
     @Override
@@ -42,7 +45,6 @@ public class ChecklistStore implements Store {
         File file = new File(workDir, addFileExtension(removeFileExtension(path)));
         try {
             file.createNewFile();
-            ObjectMapper mapper = ObjectMapperFactory.createMapper();
             // TODO separate model from store
             new FileIO(file).write(out -> mapper.writer().writeValue(out, checklist));
             io.printWarn(String.format("Checklist '%s' created", file.getName()));

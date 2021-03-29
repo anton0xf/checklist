@@ -5,6 +5,7 @@ import java.io.File;
 import checklist.domain.Checklist;
 import checklist.io.ConsoleTextIO;
 import checklist.io.TextIO;
+import checklist.json.ObjectMapperFactory;
 import checklist.store.ChecklistStore;
 import checklist.store.Store;
 import checklist.util.RandomHashGenerator;
@@ -22,7 +23,8 @@ public class App {
         ConsoleTextIO io = new ConsoleTextIO();
         RandomHashGenerator hashGenerator = new RandomHashGenerator(ID_HASH_SIZE);
         File workDir = new File(".");
-        Store store = new ChecklistStore(io, workDir);
+        ObjectMapperFactory objectMapperFactory = new ObjectMapperFactory();
+        Store store = new ChecklistStore(io, workDir, objectMapperFactory);
         App app = new App(io, hashGenerator, store);
         app.run(args);
     }

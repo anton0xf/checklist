@@ -22,15 +22,12 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class AppTest {
-    private final ObjectMapper MAPPER = ObjectMapperFactory.createMapper();
+    private final ObjectMapper MAPPER = new ObjectMapperFactory().createMapper();
 
     @Test
     void create() throws Throwable {
         TestUtils.withTempDir((workDir) -> {
-            TextIO io = new ConsoleTextIO();
-            RandomHashGenerator hashGenerator = new RandomHashGenerator(new Random(0), App.ID_HASH_SIZE);
-            ChecklistStore store = new ChecklistStore(io, workDir);
-            App app = new App(io, hashGenerator, store);
+            App app = createApp(workDir, 0);
             String out = tapSystemErrNormalized(() -> app.run(new String[]{"create", "buy"}));
 
             assertEquals("Checklist 'buy.checklist' created\n", out);
@@ -38,7 +35,7 @@ class AppTest {
             assertTrue(file.exists());
             ObjectNode expected = MAPPER.createObjectNode()
                     .put("name", "buy")
-                    .put("id", "60b420bb3851d9d4");
+                    .put("id", "60b420bb3851d9d4"); // see RandomHashGeneratorTest
             assertJsonEquals(expected, Files.readString(file.toPath()));
         });
     }
@@ -46,18 +43,23 @@ class AppTest {
     @Test
     void createOther() throws Throwable {
         TestUtils.withTempDir((workDir) -> {
-            TextIO io = new ConsoleTextIO();
-            RandomHashGenerator hashGenerator = new RandomHashGenerator(new Random(1), App.ID_HASH_SIZE);
-            ChecklistStore store = new ChecklistStore(io, workDir);
-            App app = new App(io, hashGenerator, store);
+            App app = createApp(workDir, 1);
             String out = tapSystemErrNormalized(() -> app.run(new String[]{"create", "test.checklist"}));
 
             assertEquals("Checklist 'test.checklist' created\n", out);
             ObjectNode expected = MAPPER.createObjectNode()
                     .put("name", "test")
-                    .put("id", "73d51abbd89cb819");
+                    .put("id", "73d51abbd89cb819"); // see RandomHashGeneratorTest
             assertJsonEquals(expected, Files.readString(new File(workDir, "test.checklist").toPath()));
         });
+    }
+
+    private App createApp(File workDir, int seed) {
+        TextIO io = new ConsoleTextIO();
+        RandomHashGenerator hashGenerator = new RandomHashGenerator(new Random(seed), App.ID_HASH_SIZE);
+        ObjectMapperFactory objectMapperFactory = new ObjectMapperFactory();
+        ChecklistStore store = new ChecklistStore(io, workDir, objectMapperFactory);
+        return new App(io, hashGenerator, store);
     }
 
     private void assertJsonEquals(JsonNode expected, String actualStr) throws JsonProcessingException {
