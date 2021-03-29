@@ -7,20 +7,17 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 import checklist.domain.Checklist;
 import checklist.io.FileIO;
-import checklist.io.TextIO;
 import checklist.json.ObjectMapperFactory;
+import io.vavr.control.Either;
 
 // TODO extract FileStore superclass
 public class ChecklistStore implements Store {
     public static final String FILE_EXTENSION = ".checklist";
 
-    // TODO get rid of IO
-    private final TextIO io;
     private final File workDir;
     private final ObjectMapper mapper;
 
-    public ChecklistStore(TextIO io, File workDir, ObjectMapperFactory objectMapperFactory) {
-        this.io = io;
+    public ChecklistStore(File workDir, ObjectMapperFactory objectMapperFactory) {
         this.workDir = workDir;
         this.mapper = objectMapperFactory.createMapper();
     }
@@ -41,13 +38,13 @@ public class ChecklistStore implements Store {
     }
 
     @Override
-    public void save(String path, Checklist checklist) {
+    public Either<String, String> save(String path, Checklist checklist) {
         File file = new File(workDir, addFileExtension(removeFileExtension(path)));
         try {
-            file.createNewFile();
+            boolean created = file.createNewFile();
             // TODO separate model from store
             new FileIO(file).write(out -> mapper.writer().writeValue(out, checklist));
-            io.printWarn(String.format("Checklist '%s' created", file.getName()));
+            return Either.right(file.getName());
         } catch (IOException ex) {
             throw new RuntimeException(ex);
         }

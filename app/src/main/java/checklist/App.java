@@ -10,6 +10,7 @@ import checklist.store.ChecklistStore;
 import checklist.store.Store;
 import checklist.util.RandomHashGenerator;
 import io.vavr.collection.List;
+import io.vavr.control.Either;
 
 public class App {
     public static final String CREATE_COMMAND = "create";
@@ -24,7 +25,7 @@ public class App {
         RandomHashGenerator hashGenerator = new RandomHashGenerator(ID_HASH_SIZE);
         File workDir = new File(".");
         ObjectMapperFactory objectMapperFactory = new ObjectMapperFactory();
-        Store store = new ChecklistStore(io, workDir, objectMapperFactory);
+        Store store = new ChecklistStore(workDir, objectMapperFactory);
         App app = new App(io, hashGenerator, store);
         app.run(args);
     }
@@ -65,7 +66,8 @@ public class App {
         String name = store.getName(path);
         String id = hashGenerator.next();
         Checklist checklist = new Checklist(id, name);
-        store.save(path, checklist);
+        Either<String, String> result = store.save(path, checklist);
+        result.peek(savedPath -> io.printWarn(String.format("Checklist '%s' created", savedPath)));
     }
 
 }

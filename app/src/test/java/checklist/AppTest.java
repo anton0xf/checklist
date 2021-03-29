@@ -58,7 +58,7 @@ class AppTest {
         TextIO io = new ConsoleTextIO();
         RandomHashGenerator hashGenerator = new RandomHashGenerator(new Random(seed), App.ID_HASH_SIZE);
         ObjectMapperFactory objectMapperFactory = new ObjectMapperFactory();
-        ChecklistStore store = new ChecklistStore(io, workDir, objectMapperFactory);
+        ChecklistStore store = new ChecklistStore(workDir, objectMapperFactory);
         return new App(io, hashGenerator, store);
     }
 
