@@ -51,6 +51,7 @@ public class ChecklistStore implements Store {
             if (!created) {
                 return Either.left(String.format("File '%s' already exists", file.getName()));
             }
+            // TODO extract concrete serialization format handling in separate object
             new FileIO(file).write(out -> mapper.writer().writeValue(out, entityToJsonNode(entity)));
             return Either.right(file.getName());
         } catch (IOException ex) {
