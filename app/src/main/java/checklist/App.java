@@ -1,40 +1,36 @@
 package checklist;
 
 import java.io.File;
-import java.io.IOException;
-
-import com.fasterxml.jackson.databind.ObjectMapper;
 
 import checklist.domain.Checklist;
 import checklist.io.ConsoleTextIO;
-import checklist.io.FileIO;
 import checklist.io.TextIO;
-import checklist.json.ObjectMapperFactory;
+import checklist.store.ChecklistStore;
+import checklist.store.Store;
 import checklist.util.RandomHashGenerator;
 import io.vavr.collection.List;
 
 public class App {
     public static final String CREATE_COMMAND = "create";
-    public static final String FILE_EXTENSION = ".checklist";
     public static final int ID_HASH_SIZE = 16;
 
-    // TODO move workDir (supplier?) and hashGenerator to storage
-    private final File workDir;
-    private final RandomHashGenerator hashGenerator;
     private final TextIO io;
+    private final Store store;
+    private final RandomHashGenerator hashGenerator;
 
     public static void main(String[] args) {
-        File workDir = new File(".");
-        RandomHashGenerator hashGenerator = new RandomHashGenerator();
         ConsoleTextIO io = new ConsoleTextIO();
-        App app = new App(workDir, hashGenerator, io);
+        RandomHashGenerator hashGenerator = new RandomHashGenerator(ID_HASH_SIZE);
+        File workDir = new File(".");
+        Store store = new ChecklistStore(io, workDir);
+        App app = new App(io, hashGenerator, store);
         app.run(args);
     }
 
-    public App(File workDir, RandomHashGenerator hashGenerator, TextIO io) {
-        this.workDir = workDir;
-        this.hashGenerator = hashGenerator;
+    public App(TextIO io, RandomHashGenerator hashGenerator, Store store) {
         this.io = io;
+        this.hashGenerator = hashGenerator;
+        this.store = store;
     }
 
     void run(String[] args) {
@@ -63,29 +59,11 @@ public class App {
             // TODO print command usage
             return;
         }
-        String name = removeFileExtension(args.get(0));
-        // TODO encapsulate storage
-        File file = new File(workDir, addFileExtension(name));
-        try {
-            file.createNewFile();
-            ObjectMapper mapper = ObjectMapperFactory.createMapper();
-            String id = hashGenerator.next(ID_HASH_SIZE);
-            Checklist checklist = new Checklist(id, name);
-            // TODO separate model from store
-            new FileIO(file).write(out -> mapper.writer().writeValue(out, checklist));
-            io.printWarn(String.format("Checklist '%s' created", file.getName()));
-        } catch (IOException ex) {
-            throw new RuntimeException(ex);
-        }
+        String path = args.get(0);
+        String name = store.getName(path);
+        String id = hashGenerator.next();
+        Checklist checklist = new Checklist(id, name);
+        store.save(path, checklist);
     }
 
-    static String removeFileExtension(String name) {
-        return name.endsWith(FILE_EXTENSION)
-                ? name.substring(0, name.length() - FILE_EXTENSION.length())
-                : name;
-    }
-
-    static String addFileExtension(String name) {
-        return name + FILE_EXTENSION;
-    }
 }

@@ -14,6 +14,7 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
 import checklist.io.ConsoleTextIO;
 import checklist.io.TextIO;
 import checklist.json.ObjectMapperFactory;
+import checklist.store.ChecklistStore;
 import checklist.util.RandomHashGenerator;
 
 import static com.github.stefanbirkner.systemlambda.SystemLambda.tapSystemErrNormalized;
@@ -26,9 +27,10 @@ class AppTest {
     @Test
     void create() throws Throwable {
         TestUtils.withTempDir((workDir) -> {
-            RandomHashGenerator hashGenerator = new RandomHashGenerator(new Random(0));
             TextIO io = new ConsoleTextIO();
-            App app = new App(workDir, hashGenerator, io);
+            RandomHashGenerator hashGenerator = new RandomHashGenerator(new Random(0), App.ID_HASH_SIZE);
+            ChecklistStore store = new ChecklistStore(io, workDir);
+            App app = new App(io, hashGenerator, store);
             String out = tapSystemErrNormalized(() -> app.run(new String[]{"create", "buy"}));
 
             assertEquals("Checklist 'buy.checklist' created\n", out);
@@ -44,9 +46,10 @@ class AppTest {
     @Test
     void createOther() throws Throwable {
         TestUtils.withTempDir((workDir) -> {
-            RandomHashGenerator hashGenerator = new RandomHashGenerator(new Random(1));
             TextIO io = new ConsoleTextIO();
-            App app = new App(workDir, hashGenerator, io);
+            RandomHashGenerator hashGenerator = new RandomHashGenerator(new Random(1), App.ID_HASH_SIZE);
+            ChecklistStore store = new ChecklistStore(io, workDir);
+            App app = new App(io, hashGenerator, store);
             String out = tapSystemErrNormalized(() -> app.run(new String[]{"create", "test.checklist"}));
 
             assertEquals("Checklist 'test.checklist' created\n", out);
@@ -59,21 +62,5 @@ class AppTest {
 
     private void assertJsonEquals(JsonNode expected, String actualStr) throws JsonProcessingException {
         assertEquals(expected, MAPPER.reader().readTree(actualStr));
-    }
-
-    @Test
-    public void addFileExtension() {
-        assertEquals(".checklist", App.addFileExtension(""));
-        assertEquals("asdf.checklist", App.addFileExtension("asdf"));
-    }
-
-    @Test
-    public void removeFileExtension() {
-        assertEquals("", App.removeFileExtension(""));
-        assertEquals("a", App.removeFileExtension("a"));
-        assertEquals("asdf", App.removeFileExtension("asdf"));
-        assertEquals("", App.removeFileExtension(".checklist"));
-        assertEquals("a", App.removeFileExtension("a.checklist"));
-        assertEquals("asdf", App.removeFileExtension("asdf.checklist"));
     }
 }
