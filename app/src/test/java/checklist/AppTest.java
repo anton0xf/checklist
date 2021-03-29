@@ -12,7 +12,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 
 import checklist.io.ConsoleTextIO;
-import checklist.io.TextIO;
+import checklist.io.InteractiveTextIO;
 import checklist.json.ObjectMapperFactory;
 import checklist.store.ChecklistStore;
 import checklist.util.RandomHashGenerator;
@@ -67,7 +67,7 @@ class AppTest {
     }
 
     private App createApp(File workDir, int seed) {
-        TextIO io = new ConsoleTextIO();
+        InteractiveTextIO io = new ConsoleTextIO();
         RandomHashGenerator hashGenerator = new RandomHashGenerator(new Random(seed), App.ID_HASH_SIZE);
         ObjectMapperFactory objectMapperFactory = new ObjectMapperFactory();
         ChecklistStore store = new ChecklistStore(workDir, objectMapperFactory);

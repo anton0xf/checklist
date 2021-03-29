@@ -1,13 +1,13 @@
 package checklist.io;
 
-public class ConsoleTextIO implements TextIO {
+public class ConsoleTextIO implements InteractiveTextIO {
     @Override
-    public void print(String str) {
+    public void show(String str) {
         System.out.println(str);
     }
 
     @Override
-    public void printWarn(String str) {
+    public void showWarn(String str) {
         System.err.println(str);
     }
 }
