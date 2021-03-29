@@ -16,16 +16,16 @@ import checklist.store.model.StoredMap;
 import checklist.store.model.StoredString;
 import io.vavr.control.Either;
 
-// TODO extract FileStore superclass
+// TODO extract FileStore
 public class ChecklistStore implements Store {
     public static final String FILE_EXTENSION = ".checklist";
 
     private final File workDir;
-    private final ObjectMapper mapper;
+    private final StoreFormat format;
 
     public ChecklistStore(File workDir, ObjectMapperFactory objectMapperFactory) {
         this.workDir = workDir;
-        this.mapper = objectMapperFactory.createMapper();
+        this.format = new JsonStoreFormat(objectMapperFactory);
     }
 
     @Override
@@ -51,28 +51,10 @@ public class ChecklistStore implements Store {
             if (!created) {
                 return Either.left(String.format("File '%s' already exists", file.getName()));
             }
-            // TODO extract concrete serialization format handling in separate object
-            new FileIO(file).write(out -> mapper.writer().writeValue(out, entityToJsonNode(entity)));
+            new FileIO(file).write(out -> format.write(entity, out));
             return Either.right(file.getName());
         } catch (IOException ex) {
             throw new RuntimeException(ex);
         }
-    }
-
-    private JsonNode entityToJsonNode(StoredEntity entity) {
-        final JsonNodeFactory nodeFactory = mapper.getNodeFactory();
-        return entity.visit(new StoredEntityVisitor<>() {
-            @Override
-            public JsonNode visitString(StoredString str) {
-                return nodeFactory.textNode(str.get());
-            }
-
-            @Override
-            public JsonNode visitMap(StoredMap map) {
-                ObjectNode obj = nodeFactory.objectNode();
-                map.iterator().forEach(kv -> obj.set(kv._1, entityToJsonNode(kv._2)));
-                return obj;
-            }
-        });
     }
 }
