@@ -54,6 +54,18 @@ class AppTest {
         });
     }
 
+    @Test
+    void createAlreadyExists() throws Throwable {
+        TestUtils.withTempDir((workDir) -> {
+            assertTrue(new File(workDir, "test.checklist").createNewFile());
+
+            App app = createApp(workDir, 0);
+            String out = tapSystemErrNormalized(() -> app.run(new String[]{"create", "test.checklist"}));
+
+            assertEquals("File 'test.checklist' already exists\n", out);
+        });
+    }
+
     private App createApp(File workDir, int seed) {
         TextIO io = new ConsoleTextIO();
         RandomHashGenerator hashGenerator = new RandomHashGenerator(new Random(seed), App.ID_HASH_SIZE);

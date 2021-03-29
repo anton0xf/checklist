@@ -42,6 +42,9 @@ public class ChecklistStore implements Store {
         File file = new File(workDir, addFileExtension(removeFileExtension(path)));
         try {
             boolean created = file.createNewFile();
+            if (!created) {
+                return Either.left(String.format("File '%s' already exists", file.getName()));
+            }
             // TODO separate model from store
             new FileIO(file).write(out -> mapper.writer().writeValue(out, checklist));
             return Either.right(file.getName());

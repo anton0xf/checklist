@@ -67,7 +67,8 @@ public class App {
         String id = hashGenerator.next();
         Checklist checklist = new Checklist(id, name);
         Either<String, String> result = store.save(path, checklist);
-        result.peek(savedPath -> io.printWarn(String.format("Checklist '%s' created", savedPath)));
+        result.peek(savedPath -> io.printWarn(String.format("Checklist '%s' created", savedPath)))
+                .orElseRun(io::printWarn);
     }
 
 }
