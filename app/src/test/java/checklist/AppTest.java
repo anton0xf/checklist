@@ -15,6 +15,7 @@ import checklist.io.ConsoleTextIO;
 import checklist.io.InteractiveTextIO;
 import checklist.json.ObjectMapperFactory;
 import checklist.store.ChecklistStore;
+import checklist.store.Store;
 import checklist.util.RandomHashGenerator;
 
 import static com.github.stefanbirkner.systemlambda.SystemLambda.tapSystemErrNormalized;
@@ -70,7 +71,7 @@ class AppTest {
         InteractiveTextIO io = new ConsoleTextIO();
         RandomHashGenerator hashGenerator = new RandomHashGenerator(new Random(seed), App.ID_HASH_SIZE);
         ObjectMapperFactory objectMapperFactory = new ObjectMapperFactory();
-        ChecklistStore store = new ChecklistStore(workDir, objectMapperFactory);
+        Store store = new ChecklistStore(workDir, objectMapperFactory);
         return new App(io, hashGenerator, store);
     }
 
