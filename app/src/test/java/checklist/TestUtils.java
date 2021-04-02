@@ -10,7 +10,7 @@ import checklist.io.Logger;
 import io.vavr.CheckedConsumer;
 
 public class TestUtils {
-    private static final Logger LOG = new ConsoleLogger(true);
+    private static final Logger LOG = new ConsoleLogger(false);
 
     static void withTempDir(CheckedConsumer<File> run) throws Throwable {
         Path dir = Files.createTempDirectory("checklist-test-");
@@ -21,5 +21,9 @@ public class TestUtils {
             FileSystemUtils.rmDir(dir);
             LOG.debug(() -> String.format("Temp dir '%s' deleted", dir));
         }
+    }
+
+    public static String[] toLines(String msg) {
+        return msg.lines().toArray(String[]::new);
     }
 }
