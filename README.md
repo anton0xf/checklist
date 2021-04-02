@@ -30,7 +30,8 @@ $ java -jar app/build/libs/app-all.jar create test
 ```shell
 $ ./gradlew test [-i]
 ```
-It generates a [report](app/build/reports/tests/test/index.html).
+It generates a test report (in `app/build/reports/tests/test/index.html`) 
+and coverage report (in `app/build/reports/jacoco/test/html/index.html`).
 
 ## commands
 TODO move to code and generate doc

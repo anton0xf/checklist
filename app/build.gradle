@@ -9,6 +9,8 @@
 plugins {
     // Apply the application plugin to add support for building a CLI application in Java.
     id 'application'
+    // see https://docs.gradle.org/current/userguide/jacoco_plugin.html
+    id 'jacoco'
     // see https://imperceptiblethoughts.com/shadow/
     id "com.github.johnrengelman.shadow" version "6.1.0"
 }
@@ -46,7 +48,8 @@ shadow {
     mainClassName = application.mainClass.get()
 }
 
-tasks.named('test') {
+test {
     // Use junit platform for unit tests.
     useJUnitPlatform()
+    finalizedBy jacocoTestReport
 }
