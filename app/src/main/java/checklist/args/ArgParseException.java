@@ -1,4 +1,4 @@
-package checklist.args.def;
+package checklist.args;
 
 import io.vavr.collection.Seq;
 

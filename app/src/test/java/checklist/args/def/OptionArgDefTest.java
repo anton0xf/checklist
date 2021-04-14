@@ -2,6 +2,7 @@ package checklist.args.def;
 
 import org.junit.jupiter.api.Test;
 
+import checklist.args.ArgParseException;
 import checklist.args.val.ArgsVal;
 import checklist.args.val.OptionArgVal;
 import io.vavr.Tuple2;
