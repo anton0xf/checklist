@@ -7,14 +7,18 @@ public class ArgParseException extends Throwable {
     private final Seq<String> args;
 
     public ArgParseException(String msg, Seq<String> args) {
-        super(msg + ": " + args);
+        super(getMessage(msg, args));
         this.msg = msg;
         this.args = args;
     }
 
     public ArgParseException(String msg, Seq<String> args, Throwable cause) {
-        super(msg + ": " + args, cause);
+        super(getMessage(msg, args), cause);
         this.msg = msg;
         this.args = args;
+    }
+
+    private static String getMessage(String msg, Seq<String> args) {
+        return msg + ": " + args.mkString("[", ", ", "]");
     }
 }

@@ -31,11 +31,11 @@ public class OptionArgDef implements ArgsDef {
     @Override
     public Tuple2<ArgsVal, Seq<String>> parse(Seq<String> args) throws ArgParseException {
         String arg = args.headOption()
-                .getOrElseThrow(() -> new ArgParseException("args is empty", args)); // TODO test
+                .getOrElseThrow(() -> new ArgParseException("Args is empty", args));
         if (isLong(arg)) {
             return Tuple.of(new OptionArgVal(name), args.tail());
         }
-        throw new ArgParseException("Unexpected option (expected \"" + name + "\")", args); // TODO test
+        throw new ArgParseException("Unexpected option (expected '" + name + "')", args);
     }
 
     private boolean isLong(String arg) {
