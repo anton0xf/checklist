@@ -92,22 +92,21 @@ class StoredEntitiesAssertionsTest {
                                 .put("b", new StoredMap().put("c", "2")
                                         .put("d", "3")
                                         .put("e", "4")),
-                        new StoredMap().put("a", "5")
+                        new StoredMap().put("a", "1")
                                 .put("b", new StoredMap().put("c", "6")
                                         .put("d", "3")
                                         .put("f", "7"))));
         String msg = ex.getMessage();
         LOG.debug(() -> "error message: " + msg);
         String[] lines = TestUtils.toLines(msg);
-        assertEquals(9, lines.length);
+        // TODO use assertj
+        assertEquals(7, lines.length);
         assertTrue(lines[0].startsWith("nested maps (1 failure)"));
-        assertTrue(lines[1].contains("maps (2 failures)"));
-        assertTrue(lines[2].contains("values for key a (1 failure)"));
-        assertTrue(lines[3].contains("expected: <1> but was: <5>"));
-        assertTrue(lines[4].contains("values for key b (1 failure)"));
-        assertTrue(lines[5].contains("maps (2 failures)"));
-        assertTrue(lines[6].contains("expected: <HashSet(c, d, e)> but was: <HashSet(c, d, f)>"));
-        assertTrue(lines[7].contains("values for key c (1 failure)"));
-        assertTrue(lines[8].contains("expected: <2> but was: <6>"));
+        assertTrue(lines[1].contains("maps (1 failure)"));
+        assertTrue(lines[2].contains("values for key b (1 failure)"));
+        assertTrue(lines[3].contains("maps (2 failures)"));
+        assertTrue(lines[4].contains("expected: <HashSet(c, d, e)> but was: <HashSet(c, d, f)>"));
+        assertTrue(lines[5].contains("values for key c (1 failure)"));
+        assertTrue(lines[6].contains("expected: <2> but was: <6>"));
     }
 }
