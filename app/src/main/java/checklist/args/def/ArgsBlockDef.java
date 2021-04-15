@@ -3,6 +3,7 @@ package checklist.args.def;
 import java.util.function.Function;
 
 import checklist.args.ArgParseException;
+import checklist.args.OptionsUtil;
 import checklist.args.val.ArgsBlockVal;
 import checklist.args.val.OptionArgVal;
 import checklist.args.val.PositionalArgVal;
@@ -13,7 +14,6 @@ import io.vavr.collection.Map;
 import io.vavr.collection.Seq;
 
 public class ArgsBlockDef implements ArgsDef<ArgsBlockVal> {
-    public static final String LONG_OPT_PREFIX = "--";
     private final Map<String, OptionArgDef> longOptions;
     private final Map<String, OptionArgDef> shortOptions;
     private final Seq<PositionalArgDef> positional;
@@ -31,8 +31,8 @@ public class ArgsBlockDef implements ArgsDef<ArgsBlockVal> {
         ParseState state = new ParseState(args);
         while (state.hasNext()) {
             String arg = state.next();
-            if (arg.startsWith(LONG_OPT_PREFIX)) {
-                String optName = arg.substring(LONG_OPT_PREFIX.length());
+            if (OptionsUtil.isLongOpt(arg)) {
+                String optName = OptionsUtil.getLongOptName(arg);
                 OptionArgDef opt = longOptions.get(optName)
                         .getOrElseThrow(() -> createUnexpectedOptException(optName, state));
                 state.parseOption(opt);

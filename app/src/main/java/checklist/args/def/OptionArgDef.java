@@ -1,6 +1,7 @@
 package checklist.args.def;
 
 import checklist.args.ArgParseException;
+import checklist.args.OptionsUtil;
 import checklist.args.val.OptionArgVal;
 import io.vavr.Tuple;
 import io.vavr.Tuple2;
@@ -39,6 +40,7 @@ public class OptionArgDef implements ArgsDef<OptionArgVal> {
     }
 
     private boolean isLong(String arg) {
-        return ("--" + name).equals(arg);
+        return OptionsUtil.isLongOptWithName(arg, name);
     }
+
 }
