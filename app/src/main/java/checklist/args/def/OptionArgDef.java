@@ -17,14 +17,12 @@ public class OptionArgDef implements ArgsDef<OptionArgVal> {
     }
 
     public OptionArgDef(String name, String shortName) {
-        this.name = name;
-        this.shortName = Option.some(shortName);
+        this(name, Option.some(shortName));
     }
 
     public OptionArgDef(String name, Option<String> shortName) {
         this.name = name;
-        // TODO validate len
-        this.shortName = shortName;
+        this.shortName = shortName.peek(OptionsUtil::assertShortOptName);
     }
 
     public String getName() {
@@ -55,5 +53,4 @@ public class OptionArgDef implements ArgsDef<OptionArgVal> {
         return shortName.map(name -> OptionsUtil.isShortOptWithName(arg, name))
                 .getOrElse(false);
     }
-
 }

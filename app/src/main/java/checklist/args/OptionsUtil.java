@@ -29,4 +29,10 @@ public class OptionsUtil {
     public static boolean isLongOptWithName(String arg, String name) {
         return (LONG_OPT_PREFIX + name).equals(arg);
     }
+
+    public static void assertShortOptName(String name) {
+        if (name.length() != SHORT_OPT_LEN) {
+            throw new IllegalArgumentException("Short option len should be %d: '%s'".formatted(SHORT_OPT_LEN, name));
+        }
+    }
 }

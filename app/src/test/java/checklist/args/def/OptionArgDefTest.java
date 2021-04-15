@@ -34,6 +34,13 @@ class OptionArgDefTest {
     }
 
     @Test
+    public void toLongShortOpt() {
+        assertThatThrownBy(() -> new OptionArgDef("help", "hl"))
+                .isInstanceOfSatisfying(IllegalArgumentException.class,
+                        ex -> assertThat(ex).hasMessage("Short option len should be 1: 'hl'"));
+    }
+
+    @Test
     public void parseShort() throws ArgParseException {
         Tuple2<OptionArgVal, Seq<String>> res = new OptionArgDef("help", "h")
                 .parse(List.of("-h", "rest"));
