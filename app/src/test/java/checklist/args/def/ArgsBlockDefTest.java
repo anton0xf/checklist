@@ -9,6 +9,7 @@ import io.vavr.collection.List;
 import io.vavr.collection.Seq;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 class ArgsBlockDefTest {
     @Test
@@ -20,5 +21,16 @@ class ArgsBlockDefTest {
         assertThat(res._1.getOptions()).hasOnlyOneElementSatisfying(
                         option -> assertThat(option.getName()).isEqualTo("help"));
         assertThat(res._2).isEqualTo(List.of("rest"));
+    }
+
+    @Test
+    public void parseUnexpectedLongOption() {
+        ArgsBlockDef def = new ArgsBlockDef(
+                List.of(new OptionArgDef("help")),
+                List.empty());
+        List<String> args = List.of("--other", "rest");
+        assertThatThrownBy(() -> def.parse(args))
+                .isInstanceOfSatisfying(ArgParseException.class,
+                        ex -> assertThat(ex).hasMessage("Unexpected option 'other': [--other, rest]"));
     }
 }
