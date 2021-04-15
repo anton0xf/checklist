@@ -16,8 +16,14 @@ public class OptionArgDef implements ArgsDef<OptionArgVal> {
         this(name, Option.none());
     }
 
+    public OptionArgDef(String name, String shortName) {
+        this.name = name;
+        this.shortName = Option.some(shortName);
+    }
+
     public OptionArgDef(String name, Option<String> shortName) {
         this.name = name;
+        // TODO validate len
         this.shortName = shortName;
     }
 
@@ -35,12 +41,19 @@ public class OptionArgDef implements ArgsDef<OptionArgVal> {
                 .getOrElseThrow(() -> new ArgParseException("Args is empty", args));
         if (isLong(arg)) {
             return Tuple.of(new OptionArgVal(name), args.tail());
+        } else if (isShort(arg)) {
+            return Tuple.of(new OptionArgVal(name), args.tail()); // TODO handle joined short options
         }
         throw new ArgParseException("Unexpected option (expected '" + name + "')", args);
     }
 
     private boolean isLong(String arg) {
         return OptionsUtil.isLongOptWithName(arg, name);
+    }
+
+    private boolean isShort(String arg) {
+        return shortName.map(name -> OptionsUtil.isShortOptWithName(arg, name))
+                .getOrElse(false);
     }
 
 }

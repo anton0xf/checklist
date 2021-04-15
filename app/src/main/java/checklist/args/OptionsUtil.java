@@ -18,6 +18,10 @@ public class OptionsUtil {
         return arg.substring(start, start + SHORT_OPT_LEN);
     }
 
+    public static boolean isShortOptWithName(String arg, String name) {
+        return arg.startsWith(OPT_PREFIX + name);
+    }
+
     public static String getLongOptName(String arg) {
         return arg.substring(LONG_OPT_PREFIX.length());
     }

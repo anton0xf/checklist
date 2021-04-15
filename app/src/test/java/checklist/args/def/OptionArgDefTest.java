@@ -32,4 +32,12 @@ class OptionArgDefTest {
         assertThatThrownBy(() -> new OptionArgDef("help").parse(args))
                 .hasMessage("Unexpected option (expected 'help'): [--other, rest]");
     }
+
+    @Test
+    public void parseShort() throws ArgParseException {
+        Tuple2<OptionArgVal, Seq<String>> res = new OptionArgDef("help", "h")
+                .parse(List.of("-h", "rest"));
+        assertThat(res._1.getName()).isEqualTo("help");
+        assertThat(res._2).isEqualTo(List.of("rest"));
+    }
 }

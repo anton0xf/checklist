@@ -15,7 +15,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 
 class StoredEntitiesAssertionsTest {
-    private static final Logger LOG = new ConsoleLogger(true);
+    private static final Logger LOG = new ConsoleLogger(false);
 
     @Test
     public void testEqualStrings() {
