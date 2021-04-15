@@ -3,7 +3,6 @@ package checklist.args.def;
 import org.junit.jupiter.api.Test;
 
 import checklist.args.ArgParseException;
-import checklist.args.val.ArgsVal;
 import checklist.args.val.OptionArgVal;
 import io.vavr.Tuple2;
 import io.vavr.collection.List;
@@ -15,10 +14,9 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 class OptionArgDefTest {
     @Test
     public void parseLong() throws ArgParseException {
-        Tuple2<ArgsVal, Seq<String>> res = new OptionArgDef("help")
+        Tuple2<OptionArgVal, Seq<String>> res = new OptionArgDef("help")
                 .parse(List.of("--help", "rest"));
-        assertThat(res._1).isInstanceOfSatisfying(OptionArgVal.class,
-                option -> assertThat(option.getName()).isEqualTo("help"));
+        assertThat(res._1.getName()).isEqualTo("help");
         assertThat(res._2).isEqualTo(List.of("rest"));
     }
 

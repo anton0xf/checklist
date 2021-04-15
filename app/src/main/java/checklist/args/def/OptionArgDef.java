@@ -1,14 +1,13 @@
 package checklist.args.def;
 
 import checklist.args.ArgParseException;
-import checklist.args.val.ArgsVal;
 import checklist.args.val.OptionArgVal;
 import io.vavr.Tuple;
 import io.vavr.Tuple2;
 import io.vavr.collection.Seq;
 import io.vavr.control.Option;
 
-public class OptionArgDef implements ArgsDef {
+public class OptionArgDef implements ArgsDef<OptionArgVal> {
     private final String name;
     private final Option<String> shortName;
 
@@ -30,7 +29,7 @@ public class OptionArgDef implements ArgsDef {
     }
 
     @Override
-    public Tuple2<ArgsVal, Seq<String>> parse(Seq<String> args) throws ArgParseException {
+    public Tuple2<OptionArgVal, Seq<String>> parse(Seq<String> args) throws ArgParseException {
         String arg = args.headOption()
                 .getOrElseThrow(() -> new ArgParseException("Args is empty", args));
         if (isLong(arg)) {

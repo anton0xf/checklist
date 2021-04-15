@@ -4,7 +4,6 @@ import java.util.function.Function;
 
 import checklist.args.ArgParseException;
 import checklist.args.val.ArgsBlockVal;
-import checklist.args.val.ArgsVal;
 import checklist.args.val.OptionArgVal;
 import checklist.args.val.PositionalArgVal;
 import io.vavr.Tuple;
@@ -13,7 +12,7 @@ import io.vavr.collection.List;
 import io.vavr.collection.Map;
 import io.vavr.collection.Seq;
 
-public class ArgsBlockDef implements ArgsDef {
+public class ArgsBlockDef implements ArgsDef<ArgsBlockVal> {
     public static final String LONG_OPT_PREFIX = "--";
     private final Map<String, OptionArgDef> longOptions;
     private final Map<String, OptionArgDef> shortOptions;
@@ -28,7 +27,7 @@ public class ArgsBlockDef implements ArgsDef {
     }
 
     @Override
-    public Tuple2<ArgsVal, Seq<String>> parse(Seq<String> args) throws ArgParseException {
+    public Tuple2<ArgsBlockVal, Seq<String>> parse(Seq<String> args) throws ArgParseException {
         ParseState state = new ParseState(args);
         while (state.hasNext()) {
             String arg = state.next();
@@ -78,13 +77,12 @@ public class ArgsBlockDef implements ArgsDef {
         }
 
         private void parseOption(OptionArgDef opt) throws ArgParseException {
-            Tuple2<ArgsVal, Seq<String>> res = opt.parse(args);
-            // TODO get rid of cast
-            options = options.append((OptionArgVal) res._1);
+            Tuple2<OptionArgVal, Seq<String>> res = opt.parse(args);
+            options = options.append(res._1);
             args = res._2;
         }
 
-        public Tuple2<ArgsVal, Seq<String>> getResult() {
+        public Tuple2<ArgsBlockVal, Seq<String>> getResult() {
             return Tuple.of(new ArgsBlockVal(options, positional), args);
         }
     }
