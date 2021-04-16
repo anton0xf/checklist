@@ -40,7 +40,8 @@ public class OptionArgDef implements ArgsDef<OptionArgVal> {
         if (isLong(arg)) {
             return Tuple.of(new OptionArgVal(name), args.tail());
         } else if (isShort(arg)) {
-            return Tuple.of(new OptionArgVal(name), args.tail()); // TODO handle joined short options
+            Seq<String> tail = getShortOptRestArgs(args, arg);
+            return Tuple.of(new OptionArgVal(name), tail); // TODO handle joined short options
         }
         throw new ArgParseException("Unexpected option (expected '" + name + "')", args);
     }
@@ -52,5 +53,12 @@ public class OptionArgDef implements ArgsDef<OptionArgVal> {
     private boolean isShort(String arg) {
         return shortName.map(name -> OptionsUtil.isShortOptWithName(arg, name))
                 .getOrElse(false);
+    }
+
+    private Seq<String> getShortOptRestArgs(Seq<String> args, String arg) {
+        String rest = OptionsUtil.getShortOptRest(arg);
+        Seq<String> tail = args.tail();
+        return rest.isEmpty() ? tail
+                : tail.prepend(OptionsUtil.getShortOpt(rest));
     }
 }

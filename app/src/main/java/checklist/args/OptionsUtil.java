@@ -18,8 +18,12 @@ public class OptionsUtil {
         return arg.substring(start, start + SHORT_OPT_LEN);
     }
 
+    public static String getShortOpt(String rest) {
+        return OPT_PREFIX + rest;
+    }
+
     public static boolean isShortOptWithName(String arg, String name) {
-        return arg.startsWith(OPT_PREFIX + name);
+        return arg.startsWith(getShortOpt(name));
     }
 
     public static String getLongOptName(String arg) {
@@ -34,5 +38,9 @@ public class OptionsUtil {
         if (name.length() != SHORT_OPT_LEN) {
             throw new IllegalArgumentException("Short option len should be %d: '%s'".formatted(SHORT_OPT_LEN, name));
         }
+    }
+
+    public static String getShortOptRest(String arg) {
+        return arg.substring(OPT_PREFIX.length() + SHORT_OPT_LEN);
     }
 }

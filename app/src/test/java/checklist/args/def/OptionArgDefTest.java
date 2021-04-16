@@ -47,4 +47,12 @@ class OptionArgDefTest {
         assertThat(res._1.getName()).isEqualTo("help");
         assertThat(res._2).isEqualTo(List.of("rest"));
     }
+
+    @Test
+    public void parseJoinedShort() throws ArgParseException {
+        Tuple2<OptionArgVal, Seq<String>> res = new OptionArgDef("help", "h")
+                .parse(List.of("-hr", "rest"));
+        assertThat(res._1.getName()).isEqualTo("help");
+        assertThat(res._2).isEqualTo(List.of("-r", "rest"));
+    }
 }
