@@ -2,6 +2,9 @@ package checklist;
 
 import java.io.File;
 
+import checklist.args.def.ArgsDef;
+import checklist.args.def.ArgsParseException;
+import checklist.args.val.*;
 import checklist.domain.Checklist;
 import checklist.io.ConsoleTextIO;
 import checklist.io.InteractiveTextIO;
@@ -15,6 +18,11 @@ import io.vavr.control.Either;
 public class App {
     public static final String CREATE_COMMAND = "create";
     public static final int ID_HASH_SIZE = 16;
+    private static final ArgsDef ARGS_DEF = createArgsDef();
+
+    private static ArgsDef createArgsDef() {
+        return null; // TODO
+    }
 
     private final InteractiveTextIO io;
     private final Store store;
@@ -37,8 +45,15 @@ public class App {
     }
 
     void run(String[] args) {
+        try {
+            ArgsVal parsedArgs = ARGS_DEF.parse(List.of(args));
+            parsedArgs.visit(new ArgsHandler());
+        } catch (ArgsParseException ex) {
+            io.showWarn(ex.getMessage());
+            printUsage();
+        }
         if (args.length == 0) {
-            printHelp();
+            printUsage();
             System.exit(1);
         }
         String command = args[0];
@@ -46,15 +61,17 @@ public class App {
         switch (command) {
             case CREATE_COMMAND -> create(commandArgs);
             default -> {
-                printHelp();
+                printUsage();
                 System.exit(1);
             }
         }
     }
 
-    private void printHelp() {
-        // TODO print help message and usage to stderr
-        io.showWarn("no args");
+    private void printUsage() {
+        // TODO move to right place (in parser)
+        // io.showWarn("no args");
+
+        io.showWarn(ARGS_DEF.getUsage());
     }
 
     private void create(List<String> args) {
@@ -71,4 +88,32 @@ public class App {
                 .orElseRun(io::showWarn);
     }
 
+    private static class ArgsHandler implements ArgsValVisitor {
+        @Override
+        public void visitComposite(CompositeArgsVal val) {
+            // TODO
+        }
+
+        @Override
+        public void visitArgsBlock(ArgsBlockVal val) {
+            // TODO fill options
+        }
+
+        @Override
+        public void visitOption(OptionVal val) {
+            // TODO
+        }
+
+        @Override
+        public void visitParametrizedOption(ParametrizedOptionVal val) {
+            // TODO
+        }
+
+        @Override
+        public void visitPositionalArg(PositionalArgVal val) {
+            // TODO
+        }
+
+        // TODO handle subcommand
+    }
 }
