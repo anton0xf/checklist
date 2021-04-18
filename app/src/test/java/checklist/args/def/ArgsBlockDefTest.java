@@ -1,5 +1,6 @@
 package checklist.args.def;
 
+import checklist.args.val.OptionArgVal;
 import org.junit.jupiter.api.Test;
 
 import checklist.args.ArgParseException;
@@ -42,6 +43,19 @@ class ArgsBlockDefTest {
         Tuple2<ArgsBlockVal, Seq<String>> res = def.parse(List.of("-h", "rest"));
         assertThat(res._1.getOptions()).hasOnlyOneElementSatisfying(
                 option -> assertThat(option.getName()).isEqualTo("help"));
+        assertThat(res._2).isEqualTo(List.of("rest"));
+    }
+
+    @Test
+    public void parseShortOptions() throws ArgParseException {
+        ArgsBlockDef def = new ArgsBlockDef(
+                List.of(new OptionArgDef("verbose", "v"),
+                        new OptionArgDef("quiet", "q")),
+                List.empty());
+        Tuple2<ArgsBlockVal, Seq<String>> res = def.parse(List.of("-vq", "rest"));
+        assertThat(res._1.getOptions()).hasSize(2)
+                .extracting(OptionArgVal::getName)
+                .containsExactly("verbose", "quiet");
         assertThat(res._2).isEqualTo(List.of("rest"));
     }
 }
