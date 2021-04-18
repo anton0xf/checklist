@@ -41,7 +41,7 @@ public class OptionArgDef implements ArgsDef<OptionArgVal> {
             return Tuple.of(new OptionArgVal(name), args.tail());
         } else if (isShort(arg)) {
             Seq<String> tail = getShortOptRestArgs(args, arg);
-            return Tuple.of(new OptionArgVal(name), tail); // TODO handle joined short options
+            return Tuple.of(new OptionArgVal(name), tail);
         }
         throw new ArgParseException("Unexpected option (expected '" + name + "')", args);
     }
