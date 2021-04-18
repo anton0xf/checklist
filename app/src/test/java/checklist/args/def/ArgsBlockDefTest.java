@@ -33,4 +33,15 @@ class ArgsBlockDefTest {
                 .isInstanceOfSatisfying(ArgParseException.class,
                         ex -> assertThat(ex).hasMessage("Unexpected option 'other': [--other, rest]"));
     }
+
+    @Test
+    public void parseShortOption() throws ArgParseException {
+        ArgsBlockDef def = new ArgsBlockDef(
+                List.of(new OptionArgDef("help", "h")),
+                List.empty());
+        Tuple2<ArgsBlockVal, Seq<String>> res = def.parse(List.of("-h", "rest"));
+        assertThat(res._1.getOptions()).hasOnlyOneElementSatisfying(
+                option -> assertThat(option.getName()).isEqualTo("help"));
+        assertThat(res._2).isEqualTo(List.of("rest"));
+    }
 }

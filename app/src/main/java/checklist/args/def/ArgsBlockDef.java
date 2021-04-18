@@ -36,7 +36,11 @@ public class ArgsBlockDef implements ArgsDef<ArgsBlockVal> {
                 OptionArgDef opt = longOptions.get(optName)
                         .getOrElseThrow(() -> createUnexpectedOptException(optName, state));
                 state.parseOption(opt);
-                // TODO handle short options
+            } else if(OptionsUtil.isOpt(arg)) {
+                String optName = OptionsUtil.getShortOptName(arg);
+                OptionArgDef opt = shortOptions.get(optName)
+                        .getOrElseThrow(() -> createUnexpectedOptException(optName, state));
+                state.parseOption(opt);
                 // TODO handle positional args
             } else {
                 break; // block is over
