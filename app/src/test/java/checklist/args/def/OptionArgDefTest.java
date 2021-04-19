@@ -1,5 +1,6 @@
 package checklist.args.def;
 
+import io.vavr.control.Option;
 import org.junit.jupiter.api.Test;
 
 import checklist.args.ArgParseException;
@@ -23,14 +24,16 @@ class OptionArgDefTest {
     @Test
     public void parseLongFromEmptyArgs() {
         assertThatThrownBy(() -> new OptionArgDef("help").parse(List.empty()))
-                .hasMessage("Args is empty: []");
+                .isInstanceOfSatisfying(ArgParseException.class,
+                        ex -> assertThat(ex).hasMessage("Args is empty: []"));
     }
 
     @Test
     public void parseLongFromOtherOption() {
         List<String> args = List.of("--other", "rest");
         assertThatThrownBy(() -> new OptionArgDef("help").parse(args))
-                .hasMessage("Unexpected option (expected 'help'): [--other, rest]");
+                .isInstanceOfSatisfying(ArgParseException.class,
+                        ex -> assertThat(ex).hasMessage("Unexpected option (expected 'help'): [--other, rest]"));
     }
 
     @Test
@@ -54,5 +57,31 @@ class OptionArgDefTest {
                 .parse(List.of("-hr", "rest"));
         assertThat(res._1.getName()).isEqualTo("help");
         assertThat(res._2).isEqualTo(List.of("-r", "rest"));
+    }
+
+    @Test
+    public void parseParametrizedLongWithoutParameter() {
+        assertThatThrownBy(() -> OptionArgDef.parametrized("sort").parse(List.of("--sort")))
+                .isInstanceOfSatisfying(ArgParseException.class,
+                        ex -> assertThat(ex).hasMessage(
+                                "Option 'sort' requires parameter but args list is empty: []"));
+    }
+
+    @Test
+    public void parseParametrizedLongWithOptionInsteadOfParameter() {
+        assertThatThrownBy(() -> OptionArgDef.parametrized("sort").parse(List.of("--sort", "-h")))
+                .isInstanceOfSatisfying(ArgParseException.class,
+                        ex -> assertThat(ex).hasMessage("Option 'sort' requires parameter: [-h]"));
+    }
+
+    @Test
+    public void parseParametrizedLong() throws ArgParseException {
+        Tuple2<OptionArgVal, Seq<String>> res = OptionArgDef.parametrized("sort")
+                .parse(List.of("--sort", "name", "rest"));
+        assertThat(res._1).satisfies(opt -> {
+            assertThat(opt.getName()).isEqualTo("sort");
+            assertThat(opt.getValue()).isEqualTo(Option.of("name"));
+        });
+        assertThat(res._2).isEqualTo(List.of("rest"));
     }
 }
