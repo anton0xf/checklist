@@ -146,4 +146,15 @@ class OptionArgDefTest {
                 .isInstanceOfSatisfying(ArgParseException.class,
                         ex -> assertThat(ex).hasMessage("Option 'max-depth' requires parameter: [-v]"));
     }
+
+    @Test
+    public void parseJoinedParametrizedShort() throws ArgParseException {
+        Tuple2<OptionArgVal, Seq<String>> res = OptionArgDef.parametrized("max-depth", "d")
+                .parse(List.of("-d2", "rest"));
+        assertThat(res._1).satisfies(opt -> {
+            assertThat(opt.getName()).isEqualTo("max-depth");
+            assertThat(opt.getValue()).isEqualTo(Option.of("2"));
+        });
+        assertThat(res._2).isEqualTo(List.of("rest"));
+    }
 }

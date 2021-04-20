@@ -124,8 +124,7 @@ public class OptionArgDef implements ArgsDef<OptionArgVal> {
         Option<String> argRest = parsedOpt.tail().headOption();
         if (hasParameter) {
             if (argRest.isDefined()) {
-                // TODO
-                throw new UnsupportedOperationException("Unimplemented yet");
+                return Tuple.of(new OptionArgVal(name, argRest.get()), otherArgs);
             } else {
                 return parseParametrized(otherArgs);
             }
