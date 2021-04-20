@@ -119,4 +119,31 @@ class OptionArgDefTest {
         assertThat(res._1.getName()).isEqualTo("help");
         assertThat(res._2).isEqualTo(List.of("-r", "rest"));
     }
+
+    @Test
+    public void parseParametrizedShort() throws ArgParseException {
+        Tuple2<OptionArgVal, Seq<String>> res = OptionArgDef.parametrized("max-depth", "d")
+                .parse(List.of("-d", "2", "rest"));
+        assertThat(res._1).satisfies(opt -> {
+            assertThat(opt.getName()).isEqualTo("max-depth");
+            assertThat(opt.getValue()).isEqualTo(Option.of("2"));
+        });
+        assertThat(res._2).isEqualTo(List.of("rest"));
+    }
+
+    @Test
+    public void parseParametrizedShortWithoutParameter() {
+        assertThatThrownBy(() -> OptionArgDef.parametrized("max-depth", "d").parse(List.of("-d")))
+                .isInstanceOfSatisfying(ArgParseException.class,
+                        ex -> assertThat(ex).hasMessage(
+                                "Option 'max-depth' requires parameter but args list is empty: []"));
+    }
+
+    @Test
+    public void parseParametrizedShortWithOptionInsteadOfParameter() {
+        OptionArgDef def = OptionArgDef.parametrized("max-depth", "d");
+        assertThatThrownBy(() -> def.parse(List.of("-d", "-v")))
+                .isInstanceOfSatisfying(ArgParseException.class,
+                        ex -> assertThat(ex).hasMessage("Option 'max-depth' requires parameter: [-v]"));
+    }
 }

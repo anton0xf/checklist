@@ -82,7 +82,7 @@ public class OptionArgDef implements ArgsDef<OptionArgVal> {
             if (parameter.isDefined()) {
                 return Tuple.of(new OptionArgVal(name, parameter.get()), otherArgs);
             }
-            return parseParametrizedLong(otherArgs);
+            return parseParametrized(otherArgs);
         } else {
             if (parameter.isDefined()) {
                 throw new ArgParseException("Unexpected option parameter", args);
@@ -91,7 +91,7 @@ public class OptionArgDef implements ArgsDef<OptionArgVal> {
         }
     }
 
-    private Tuple2<OptionArgVal, Seq<String>> parseParametrizedLong(Seq<String> otherArgs) throws ArgParseException {
+    private Tuple2<OptionArgVal, Seq<String>> parseParametrized(Seq<String> otherArgs) throws ArgParseException {
         String param = otherArgs.headOption()
                 .getOrElseThrow(() -> new ArgParseException(
                         "Option '%s' requires parameter but args list is empty".formatted(name), otherArgs));
@@ -119,12 +119,22 @@ public class OptionArgDef implements ArgsDef<OptionArgVal> {
         return Option.some(parseShortOpt(parsedShortOpt, args.tail()));
     }
 
-    private Tuple2<OptionArgVal, Seq<String>> parseShortOpt(Seq<String> parsedOpt, Seq<String> otherArgs) {
+    private Tuple2<OptionArgVal, Seq<String>> parseShortOpt(Seq<String> parsedOpt, Seq<String> otherArgs)
+            throws ArgParseException {
         Option<String> argRest = parsedOpt.tail().headOption();
-        Seq<String> argsRest = argRest
-                .map(rest -> otherArgs.prepend(OptionsUtil.toShortOpt(rest)))
-                .getOrElse(otherArgs);
-        return Tuple.of(new OptionArgVal(name), argsRest);
+        if (hasParameter) {
+            if (argRest.isDefined()) {
+                // TODO
+                throw new UnsupportedOperationException("Unimplemented yet");
+            } else {
+                return parseParametrized(otherArgs);
+            }
+        } else {
+            Seq<String> argsRest = argRest
+                    .map(rest -> otherArgs.prepend(OptionsUtil.toShortOpt(rest)))
+                    .getOrElse(otherArgs);
+            return Tuple.of(new OptionArgVal(name), argsRest);
+        }
     }
 
 }
