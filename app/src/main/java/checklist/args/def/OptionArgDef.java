@@ -116,24 +116,22 @@ public class OptionArgDef implements ArgsDef<OptionArgVal> {
                     .formatted(OptionsUtil.toShortOpt(shortName.get()), toLongOpt(name));
             throw new ArgParseException(msg, args);
         }
-        return Option.some(parseShortOpt(parsedShortOpt, args.tail()));
+        return Option.some(parseShort(parsedShortOpt, args.tail()));
     }
 
-    private Tuple2<OptionArgVal, Seq<String>> parseShortOpt(Seq<String> parsedOpt, Seq<String> otherArgs)
+    private Tuple2<OptionArgVal, Seq<String>> parseShort(Seq<String> parsedOpt, Seq<String> otherArgs)
             throws ArgParseException {
         Option<String> argRest = parsedOpt.tail().headOption();
         if (hasParameter) {
             if (argRest.isDefined()) {
                 return Tuple.of(new OptionArgVal(name, argRest.get()), otherArgs);
-            } else {
-                return parseParametrized(otherArgs);
             }
-        } else {
-            Seq<String> argsRest = argRest
-                    .map(rest -> otherArgs.prepend(OptionsUtil.toShortOpt(rest)))
-                    .getOrElse(otherArgs);
-            return Tuple.of(new OptionArgVal(name), argsRest);
+            return parseParametrized(otherArgs);
         }
+        Seq<String> argsRest = argRest
+                .map(rest -> otherArgs.prepend(OptionsUtil.toShortOpt(rest)))
+                .getOrElse(otherArgs);
+        return Tuple.of(new OptionArgVal(name), argsRest);
     }
 
 }
