@@ -2,7 +2,7 @@ package checklist.args;
 
 import io.vavr.collection.Seq;
 
-public class ArgParseException extends Throwable {
+public class ArgParseException extends Exception {
     private final String msg;
     private final Seq<String> args;
 

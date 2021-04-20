@@ -48,28 +48,31 @@ public class OptionArgDef implements ArgsDef<OptionArgVal> {
 
     @Override
     public Tuple2<OptionArgVal, Seq<String>> parse(Seq<String> args) throws ArgParseException {
-        String arg = args.headOption()
-                .getOrElseThrow(() -> new ArgParseException("Args is empty", args));
-        Seq<String> parsedLongOpt = tryParseLongOpt(arg);
-        if (!parsedLongOpt.isEmpty()) {
-            String optName = parsedLongOpt.head();
-            if (!name.equals(optName)) {
-                throw new ArgParseException("Unexpected option (expected '%s')".formatted(toLongOpt(name)), args);
-            }
-            return parseLong(parsedLongOpt.tail().headOption(), args.tail());
+        if (args.isEmpty()) {
+            throw new ArgParseException("Args is empty", args);
         }
-        Seq<String> parsedShortOpt = OptionsUtil.tryParseShortOpt(arg);
-        if (shortName.isDefined() && !parsedShortOpt.isEmpty()) {
-            String optName = parsedShortOpt.head();
-            if (!shortName.get().equals(optName)) {
-                String msg = "Unexpected option (expected '%s' or '%s')"
-                        .formatted(OptionsUtil.toShortOpt(shortName.get()), toLongOpt(name));
-                throw new ArgParseException(msg, args);
-            }
-            Seq<String> argsRest = getShortOptRestArgs(parsedShortOpt.tail().headOption(), args.tail());
-            return Tuple.of(new OptionArgVal(name), argsRest);
+        Option<Tuple2<OptionArgVal, Seq<String>>> longOpt = tryParseLong(args);
+        if (longOpt.isDefined()) {
+            return longOpt.get();
+        }
+        Option<Tuple2<OptionArgVal, Seq<String>>> shortOpt = tryParseShort(args);
+        if (shortOpt.isDefined()) {
+            return shortOpt.get();
         }
         throw new ArgParseException("Unexpected argument (expected '%s')".formatted(toLongOpt(name)), args);
+    }
+
+    private Option<Tuple2<OptionArgVal, Seq<String>>> tryParseLong(Seq<String> args) throws ArgParseException {
+        String arg = args.head();
+        Seq<String> parsedLongOpt = tryParseLongOpt(arg);
+        if (parsedLongOpt.isEmpty()) {
+            return Option.none();
+        }
+        String optName = parsedLongOpt.head();
+        if (!name.equals(optName)) {
+            throw new ArgParseException("Unexpected option (expected '%s')".formatted(toLongOpt(name)), args);
+        }
+        return Option.some(parseLong(parsedLongOpt.tail().headOption(), args.tail()));
     }
 
     private Tuple2<OptionArgVal, Seq<String>> parseLong(Option<String> parameter, Seq<String> otherArgs)
@@ -95,9 +98,30 @@ public class OptionArgDef implements ArgsDef<OptionArgVal> {
         return Tuple.of(new OptionArgVal(name, param), otherArgs.tail());
     }
 
-    private Seq<String> getShortOptRestArgs(Option<String> argRest, Seq<String> otherArgs) {
-        return argRest
+    private Option<Tuple2<OptionArgVal, Seq<String>>> tryParseShort(Seq<String> args) throws ArgParseException {
+        if (shortName.isEmpty()) {
+            return Option.none();
+        }
+        String arg = args.head();
+        Seq<String> parsedShortOpt = OptionsUtil.tryParseShortOpt(arg);
+        if (parsedShortOpt.isEmpty()) {
+            return Option.none();
+        }
+        String optName = parsedShortOpt.head();
+        if (!shortName.get().equals(optName)) {
+            String msg = "Unexpected option (expected '%s' or '%s')"
+                    .formatted(OptionsUtil.toShortOpt(shortName.get()), toLongOpt(name));
+            throw new ArgParseException(msg, args);
+        }
+        return Option.some(parseShortOpt(parsedShortOpt, args.tail()));
+    }
+
+    private Tuple2<OptionArgVal, Seq<String>> parseShortOpt(Seq<String> parsedOpt, Seq<String> otherArgs) {
+        Option<String> argRest = parsedOpt.tail().headOption();
+        Seq<String> argsRest = argRest
                 .map(rest -> otherArgs.prepend(OptionsUtil.toShortOpt(rest)))
                 .getOrElse(otherArgs);
+        return Tuple.of(new OptionArgVal(name), argsRest);
     }
+
 }
