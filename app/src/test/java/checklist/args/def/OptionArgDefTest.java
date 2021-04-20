@@ -1,6 +1,5 @@
 package checklist.args.def;
 
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
 import checklist.args.ArgParseException;
@@ -60,13 +59,12 @@ class OptionArgDefTest {
         assertThat(res._2).isEqualTo(List.of("rest"));
     }
 
-    @Disabled
     @Test
     public void parseShortFromOtherOption() {
         List<String> args = List.of("-o", "rest");
         assertThatThrownBy(() -> new OptionArgDef("help", "h").parse(args))
                 .isInstanceOfSatisfying(ArgParseException.class,
-                        ex -> assertThat(ex).hasMessage("Unexpected option (expected '-h' or '--help'): [-r, rest]"));
+                        ex -> assertThat(ex).hasMessage("Unexpected option (expected '-h' or '--help'): [-o, rest]"));
     }
 
     @Test

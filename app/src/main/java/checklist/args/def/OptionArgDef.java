@@ -8,7 +8,6 @@ import io.vavr.Tuple2;
 import io.vavr.collection.Seq;
 import io.vavr.control.Option;
 
-import static checklist.args.OptionsUtil.isShortOptWithName;
 import static checklist.args.OptionsUtil.toLongOpt;
 import static checklist.args.OptionsUtil.tryParseLongOpt;
 
@@ -58,10 +57,17 @@ public class OptionArgDef implements ArgsDef<OptionArgVal> {
                 throw new ArgParseException("Unexpected option (expected '%s')".formatted(toLongOpt(name)), args);
             }
             return parseLong(parsedLongOpt.tail().headOption(), args.tail());
-        } else if (isShort(arg)) {
-            // TODO error if short name not matches
-            Seq<String> tail = getShortOptRestArgs(args, arg);
-            return Tuple.of(new OptionArgVal(name), tail);
+        }
+        Seq<String> parsedShortOpt = OptionsUtil.tryParseShortOpt(arg);
+        if (shortName.isDefined() && !parsedShortOpt.isEmpty()) {
+            String optName = parsedShortOpt.head();
+            if (!shortName.get().equals(optName)) {
+                String msg = "Unexpected option (expected '%s' or '%s')"
+                        .formatted(OptionsUtil.toShortOpt(shortName.get()), toLongOpt(name));
+                throw new ArgParseException(msg, args);
+            }
+            Seq<String> argsRest = getShortOptRestArgs(parsedShortOpt.tail().headOption(), args.tail());
+            return Tuple.of(new OptionArgVal(name), argsRest);
         }
         throw new ArgParseException("Unexpected argument (expected '%s')".formatted(toLongOpt(name)), args);
     }
@@ -89,15 +95,9 @@ public class OptionArgDef implements ArgsDef<OptionArgVal> {
         return Tuple.of(new OptionArgVal(name, param), otherArgs.tail());
     }
 
-    private boolean isShort(String arg) {
-        return shortName.map(name -> isShortOptWithName(arg, name))
-                .getOrElse(false);
-    }
-
-    private Seq<String> getShortOptRestArgs(Seq<String> args, String arg) {
-        String rest = OptionsUtil.getShortOptRest(arg);
-        Seq<String> tail = args.tail();
-        return rest.isEmpty() ? tail
-                : tail.prepend(OptionsUtil.getShortOpt(rest));
+    private Seq<String> getShortOptRestArgs(Option<String> argRest, Seq<String> otherArgs) {
+        return argRest
+                .map(rest -> otherArgs.prepend(OptionsUtil.toShortOpt(rest)))
+                .getOrElse(otherArgs);
     }
 }
