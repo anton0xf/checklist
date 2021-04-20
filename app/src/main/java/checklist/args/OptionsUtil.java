@@ -1,16 +1,42 @@
 package checklist.args;
 
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
+import io.vavr.Predicates;
+import io.vavr.collection.List;
+import io.vavr.collection.Seq;
+import io.vavr.collection.Stream;
+
 public class OptionsUtil {
     private static final String OPT_PREFIX = "-";
     private static final String LONG_OPT_PREFIX = "--";
+    private static final Pattern LONG_OPT_PATTERN = Pattern.compile("^--([^=]+)(?:=(.*))?$");
     private static final int SHORT_OPT_LEN = 1;
 
     public static boolean isOpt(String arg) {
         return arg.startsWith(OPT_PREFIX);
     }
 
-    public static boolean isLongOpt(String arg) {
-        return arg.startsWith(LONG_OPT_PREFIX);
+    public static String toLongOpt(String name) {
+        return LONG_OPT_PREFIX + name;
+    }
+
+    /**
+     * Try to parse long option from command line argument.
+     * It returns empty Seq, if it is not long option.
+     * It returns singleton Seq of option name, if it contains only name (line "--help").
+     * Or it returns option name and value, if it contains both (like "--sort=time").
+     */
+    public static Seq<String> tryParseLongOpt(String arg) {
+        Matcher matcher = LONG_OPT_PATTERN.matcher(arg);
+        if (!matcher.matches()) {
+            return List.empty();
+        }
+        return Stream.from(1)
+                .take(matcher.groupCount())
+                .map(matcher::group)
+                .filter(Predicates.isNotNull());
     }
 
     public static String getShortOptName(String arg) {
@@ -24,14 +50,6 @@ public class OptionsUtil {
 
     public static boolean isShortOptWithName(String arg, String name) {
         return arg.startsWith(getShortOpt(name));
-    }
-
-    public static String getLongOptName(String arg) {
-        return arg.substring(LONG_OPT_PREFIX.length());
-    }
-
-    public static boolean isLongOptWithName(String arg, String name) {
-        return (LONG_OPT_PREFIX + name).equals(arg);
     }
 
     public static void assertShortOptName(String name) {

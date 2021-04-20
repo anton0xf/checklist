@@ -1,6 +1,6 @@
 package checklist.args.def;
 
-import io.vavr.control.Option;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
 import checklist.args.ArgParseException;
@@ -8,6 +8,7 @@ import checklist.args.val.OptionArgVal;
 import io.vavr.Tuple2;
 import io.vavr.collection.List;
 import io.vavr.collection.Seq;
+import io.vavr.control.Option;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
@@ -33,7 +34,15 @@ class OptionArgDefTest {
         List<String> args = List.of("--other", "rest");
         assertThatThrownBy(() -> new OptionArgDef("help").parse(args))
                 .isInstanceOfSatisfying(ArgParseException.class,
-                        ex -> assertThat(ex).hasMessage("Unexpected option (expected 'help'): [--other, rest]"));
+                        ex -> assertThat(ex).hasMessage("Unexpected option (expected '--help'): [--other, rest]"));
+    }
+
+    @Test
+    public void parseLongFromNoOpt() {
+        List<String> args = List.of("rest");
+        assertThatThrownBy(() -> new OptionArgDef("help").parse(args))
+                .isInstanceOfSatisfying(ArgParseException.class,
+                        ex -> assertThat(ex).hasMessage("Unexpected argument (expected '--help'): [rest]"));
     }
 
     @Test
@@ -49,6 +58,15 @@ class OptionArgDefTest {
                 .parse(List.of("-h", "rest"));
         assertThat(res._1.getName()).isEqualTo("help");
         assertThat(res._2).isEqualTo(List.of("rest"));
+    }
+
+    @Disabled
+    @Test
+    public void parseShortFromOtherOption() {
+        List<String> args = List.of("-o", "rest");
+        assertThatThrownBy(() -> new OptionArgDef("help", "h").parse(args))
+                .isInstanceOfSatisfying(ArgParseException.class,
+                        ex -> assertThat(ex).hasMessage("Unexpected option (expected '-h' or '--help'): [-r, rest]"));
     }
 
     @Test
@@ -78,6 +96,17 @@ class OptionArgDefTest {
     public void parseParametrizedLong() throws ArgParseException {
         Tuple2<OptionArgVal, Seq<String>> res = OptionArgDef.parametrized("sort")
                 .parse(List.of("--sort", "name", "rest"));
+        assertThat(res._1).satisfies(opt -> {
+            assertThat(opt.getName()).isEqualTo("sort");
+            assertThat(opt.getValue()).isEqualTo(Option.of("name"));
+        });
+        assertThat(res._2).isEqualTo(List.of("rest"));
+    }
+
+    @Test
+    public void parseJoinedParametrizedLong() throws ArgParseException {
+        Tuple2<OptionArgVal, Seq<String>> res = OptionArgDef.parametrized("sort")
+                .parse(List.of("--sort=name", "rest"));
         assertThat(res._1).satisfies(opt -> {
             assertThat(opt.getName()).isEqualTo("sort");
             assertThat(opt.getValue()).isEqualTo(Option.of("name"));

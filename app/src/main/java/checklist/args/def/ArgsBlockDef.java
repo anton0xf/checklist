@@ -31,8 +31,9 @@ public class ArgsBlockDef implements ArgsDef<ArgsBlockVal> {
         ParseState state = new ParseState(args);
         while (state.hasNext()) {
             String arg = state.next();
-            if (OptionsUtil.isLongOpt(arg)) {
-                String optName = OptionsUtil.getLongOptName(arg);
+            Seq<String> parsedLongOpt = OptionsUtil.tryParseLongOpt(arg);
+            if (!parsedLongOpt.isEmpty()) {
+                String optName = parsedLongOpt.head();
                 OptionArgDef opt = longOptions.get(optName)
                         .getOrElseThrow(() -> createUnexpectedOptException(optName, state));
                 state.parseOption(opt);
