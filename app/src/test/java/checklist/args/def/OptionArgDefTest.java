@@ -45,37 +45,6 @@ class OptionArgDefTest {
     }
 
     @Test
-    public void toLongShortOpt() {
-        assertThatThrownBy(() -> new OptionArgDef("help", "hl"))
-                .isInstanceOfSatisfying(IllegalArgumentException.class,
-                        ex -> assertThat(ex).hasMessage("Short option len should be 1: 'hl'"));
-    }
-
-    @Test
-    public void parseShort() throws ArgParseException {
-        Tuple2<OptionArgVal, Seq<String>> res = new OptionArgDef("help", "h")
-                .parse(List.of("-h", "rest"));
-        assertThat(res._1.getName()).isEqualTo("help");
-        assertThat(res._2).isEqualTo(List.of("rest"));
-    }
-
-    @Test
-    public void parseShortFromOtherOption() {
-        List<String> args = List.of("-o", "rest");
-        assertThatThrownBy(() -> new OptionArgDef("help", "h").parse(args))
-                .isInstanceOfSatisfying(ArgParseException.class,
-                        ex -> assertThat(ex).hasMessage("Unexpected option (expected '-h' or '--help'): [-o, rest]"));
-    }
-
-    @Test
-    public void parseJoinedShort() throws ArgParseException {
-        Tuple2<OptionArgVal, Seq<String>> res = new OptionArgDef("help", "h")
-                .parse(List.of("-hr", "rest"));
-        assertThat(res._1.getName()).isEqualTo("help");
-        assertThat(res._2).isEqualTo(List.of("-r", "rest"));
-    }
-
-    @Test
     public void parseParametrizedLongWithoutParameter() {
         assertThatThrownBy(() -> OptionArgDef.parametrized("sort").parse(List.of("--sort")))
                 .isInstanceOfSatisfying(ArgParseException.class,
@@ -118,5 +87,36 @@ class OptionArgDefTest {
         assertThatThrownBy(() -> new OptionArgDef("help").parse(args))
                 .isInstanceOfSatisfying(ArgParseException.class,
                         ex -> assertThat(ex).hasMessage("Unexpected option parameter: [--help=value, rest]"));
+    }
+
+    @Test
+    public void toLongShortOpt() {
+        assertThatThrownBy(() -> new OptionArgDef("help", "hl"))
+                .isInstanceOfSatisfying(IllegalArgumentException.class,
+                        ex -> assertThat(ex).hasMessage("Short option len should be 1: 'hl'"));
+    }
+
+    @Test
+    public void parseShort() throws ArgParseException {
+        Tuple2<OptionArgVal, Seq<String>> res = new OptionArgDef("help", "h")
+                .parse(List.of("-h", "rest"));
+        assertThat(res._1.getName()).isEqualTo("help");
+        assertThat(res._2).isEqualTo(List.of("rest"));
+    }
+
+    @Test
+    public void parseShortFromOtherOption() {
+        List<String> args = List.of("-o", "rest");
+        assertThatThrownBy(() -> new OptionArgDef("help", "h").parse(args))
+                .isInstanceOfSatisfying(ArgParseException.class,
+                        ex -> assertThat(ex).hasMessage("Unexpected option (expected '-h' or '--help'): [-o, rest]"));
+    }
+
+    @Test
+    public void parseJoinedShort() throws ArgParseException {
+        Tuple2<OptionArgVal, Seq<String>> res = new OptionArgDef("help", "h")
+                .parse(List.of("-hr", "rest"));
+        assertThat(res._1.getName()).isEqualTo("help");
+        assertThat(res._2).isEqualTo(List.of("-r", "rest"));
     }
 }
