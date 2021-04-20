@@ -111,4 +111,12 @@ class OptionArgDefTest {
         });
         assertThat(res._2).isEqualTo(List.of("rest"));
     }
+
+    @Test
+    public void parseLongFlagWithJoinedParameter() throws ArgParseException {
+        List<String> args = List.of("--help=value", "rest");
+        assertThatThrownBy(() -> new OptionArgDef("help").parse(args))
+                .isInstanceOfSatisfying(ArgParseException.class,
+                        ex -> assertThat(ex).hasMessage("Unexpected option parameter: [--help=value, rest]"));
+    }
 }

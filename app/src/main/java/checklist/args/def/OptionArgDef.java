@@ -72,18 +72,21 @@ public class OptionArgDef implements ArgsDef<OptionArgVal> {
         if (!name.equals(optName)) {
             throw new ArgParseException("Unexpected option (expected '%s')".formatted(toLongOpt(name)), args);
         }
-        return Option.some(parseLong(parsedLongOpt.tail().headOption(), args.tail()));
+        return Option.some(parseLong(parsedLongOpt.tail().headOption(), args));
     }
 
-    private Tuple2<OptionArgVal, Seq<String>> parseLong(Option<String> parameter, Seq<String> otherArgs)
+    private Tuple2<OptionArgVal, Seq<String>> parseLong(Option<String> parameter, Seq<String> args)
             throws ArgParseException {
+        Seq<String> otherArgs = args.tail();
         if (hasParameter) {
             if (parameter.isDefined()) {
                 return Tuple.of(new OptionArgVal(name, parameter.get()), otherArgs);
             }
             return parseParametrizedLong(otherArgs);
         } else {
-            // TODO error if parameter is present
+            if (parameter.isDefined()) {
+                throw new ArgParseException("Unexpected option parameter", args);
+            }
             return Tuple.of(new OptionArgVal(name), otherArgs);
         }
     }
