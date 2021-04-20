@@ -28,7 +28,7 @@ public class ArgsBlockDef implements ArgsDef<ArgsBlockVal> {
 
     @Override
     public Tuple2<ArgsBlockVal, Seq<String>> parse(Seq<String> args) throws ArgParseException {
-        ParseState state = new ParseState(args);
+        ParseState state = new ParseState(args, positional);
         while (state.hasNext()) {
             String arg = state.next();
             Seq<String> parsedLongOpt = OptionsUtil.tryParseLongOpt(arg);
@@ -49,7 +49,11 @@ public class ArgsBlockDef implements ArgsDef<ArgsBlockVal> {
                 continue;
             }
 
-            // TODO handle positional args
+            if (state.hasNextPositional()) {
+                state.parsePositional();
+                continue;
+            }
+
             break; // block is over
         }
         // TODO error if not all mandatory positional args present
@@ -63,15 +67,17 @@ public class ArgsBlockDef implements ArgsDef<ArgsBlockVal> {
 
     private static class ParseState {
         private Seq<String> args;
+        private Seq<PositionalArgDef> curPositionalDefs;
         private List<OptionArgVal> options = List.empty();
-        private List<PositionalArgVal> positional = List.empty();
+        private List<PositionalArgVal> positionalVals = List.empty();
 
-        public ParseState(Seq<String> args) {
+        public ParseState(Seq<String> args, Seq<PositionalArgDef> positionalDefs) {
             this.args = args;
+            curPositionalDefs = positionalDefs;
         }
 
         public boolean hasNext() {
-            return !args.isEmpty();
+            return args.nonEmpty();
         }
 
         public String next() {
@@ -93,7 +99,18 @@ public class ArgsBlockDef implements ArgsDef<ArgsBlockVal> {
         }
 
         public Tuple2<ArgsBlockVal, Seq<String>> getResult() {
-            return Tuple.of(new ArgsBlockVal(options, positional), args);
+            return Tuple.of(new ArgsBlockVal(options, positionalVals), args);
+        }
+
+        public boolean hasNextPositional() {
+            return curPositionalDefs.nonEmpty();
+        }
+
+        public void parsePositional() throws ArgParseException {
+            Tuple2<PositionalArgVal, Seq<String>> res = curPositionalDefs.head().parse(args);
+            curPositionalDefs = curPositionalDefs.tail();
+            positionalVals = positionalVals.append(res._1);
+            args = res._2;
         }
     }
 }

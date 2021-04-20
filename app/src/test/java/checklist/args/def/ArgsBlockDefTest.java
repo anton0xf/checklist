@@ -1,10 +1,10 @@
 package checklist.args.def;
 
-import checklist.args.val.OptionArgVal;
 import org.junit.jupiter.api.Test;
 
 import checklist.args.ArgParseException;
 import checklist.args.val.ArgsBlockVal;
+import checklist.args.val.OptionArgVal;
 import io.vavr.Tuple2;
 import io.vavr.collection.List;
 import io.vavr.collection.Seq;
@@ -56,6 +56,18 @@ class ArgsBlockDefTest {
         assertThat(res._1.getOptions()).hasSize(2)
                 .extracting(OptionArgVal::getName)
                 .containsExactly("verbose", "quiet");
+        assertThat(res._2).isEqualTo(List.of("rest"));
+    }
+
+    @Test
+    public void parsePositional() throws ArgParseException {
+        ArgsBlockDef def = new ArgsBlockDef(
+                List.empty(),
+                List.of(new PositionalArgDef("name")));
+        Tuple2<ArgsBlockVal, Seq<String>> res = def.parse(List.of("test", "rest"));
+        assertThat(res._1.getOptions()).isEmpty();
+        assertThat(res._1.getPositional()).hasOnlyOneElementSatisfying(
+                arg -> assertThat(arg.getValue()).isEqualTo("test"));
         assertThat(res._2).isEqualTo(List.of("rest"));
     }
 }
