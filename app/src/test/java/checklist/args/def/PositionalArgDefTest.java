@@ -26,11 +26,4 @@ class PositionalArgDefTest {
                 .isInstanceOfSatisfying(ArgParseException.class,
                         ex -> assertThat(ex).hasMessage("Args is empty: []"));
     }
-
-    @Test
-    public void parsePosArgFromOption() {
-        assertThatThrownBy(() -> new PositionalArgDef("name").parse(List.of("--help", "rest")))
-                .isInstanceOfSatisfying(ArgParseException.class,
-                        ex -> assertThat(ex).hasMessage("Expected positional argument, not option: [--help, rest]"));
-    }
 }

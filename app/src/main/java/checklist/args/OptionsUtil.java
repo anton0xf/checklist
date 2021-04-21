@@ -10,6 +10,7 @@ import io.vavr.collection.Seq;
 import io.vavr.collection.Stream;
 
 public class OptionsUtil {
+    public static final String POSITIONAL_SEPARATOR = "--";
     private static final String OPT_PREFIX = "-";
     private static final String LONG_OPT_PREFIX = "--";
     private static final Pattern LONG_OPT_PATTERN = Pattern.compile("^--([^=]+)(?:=(.*))?$");

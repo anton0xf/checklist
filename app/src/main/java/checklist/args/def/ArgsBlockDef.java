@@ -43,6 +43,13 @@ public class ArgsBlockDef implements ArgsDef<ArgsBlockVal> {
         ParseState state = new ParseState(args, positional);
         while (state.hasNext()) {
             String arg = state.next();
+
+            if (arg.equals(OptionsUtil.POSITIONAL_SEPARATOR)) {
+                state.skip();
+                state.parsePositionalArgs();
+                break;
+            }
+
             Seq<String> parsedLongOpt = OptionsUtil.tryParseLongOpt(arg);
             if (!parsedLongOpt.isEmpty()) {
                 String optName = parsedLongOpt.head();
@@ -96,6 +103,10 @@ public class ArgsBlockDef implements ArgsDef<ArgsBlockVal> {
             return args.head();
         }
 
+        public void skip() {
+            args = args.tail();
+        }
+
         public Seq<String> getArgs() {
             return args;
         }
@@ -123,6 +134,12 @@ public class ArgsBlockDef implements ArgsDef<ArgsBlockVal> {
             restPositionalDefs = restPositionalDefs.tail();
             positionalVals = positionalVals.append(res._1);
             args = res._2;
+        }
+
+        public void parsePositionalArgs() throws ArgParseException {
+            while (hasNextPositional()) {
+                parsePositional();
+            }
         }
 
         public void checkAllMandatoryPositionalPresent() throws ArgParseException {

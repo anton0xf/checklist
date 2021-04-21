@@ -119,4 +119,19 @@ class ArgsBlockDefTest {
                 .containsExactly("m1v", "m2v", "o1v");
         assertThat(res._2).isEmpty();
     }
+
+    @Test
+    public void parseSeparatedPositional() throws ArgParseException {
+        ArgsBlockDef def = new ArgsBlockDef(
+                List.of(new OptionArgDef("verbose")),
+                List.of(new PositionalArgDef("m1"),
+                        PositionalArgDef.optional("o1")));
+        Tuple2<ArgsBlockVal, Seq<String>> res = def.parse(List.of("--verbose", "m1v", "--", "--o1v", "rest"));
+        assertThat(res._1.getOptions()).hasOnlyOneElementSatisfying(
+                opt -> assertThat(opt.getName()).isEqualTo("verbose"));
+        assertThat(res._1.getPositional()).hasSize(2)
+                .extracting(PositionalArgVal::getValue)
+                .containsExactly("m1v", "--o1v");
+        assertThat(res._2).isEqualTo(List.of("rest"));
+    }
 }
