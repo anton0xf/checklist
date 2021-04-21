@@ -25,7 +25,7 @@ class OptionArgDefTest {
     public void parseLongFromEmptyArgs() {
         assertThatThrownBy(() -> new OptionArgDef("help").parse(List.empty()))
                 .isInstanceOfSatisfying(ArgParseException.class,
-                        ex -> assertThat(ex).hasMessage("Args is empty: []"));
+                        ex -> assertThat(ex).hasMessage("Arguments list is empty: []"));
     }
 
     @Test

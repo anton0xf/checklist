@@ -16,10 +16,15 @@ public class SubcommandDef implements ArgsDef<SubcommandVal> {
         this.argsBlock = argsBlock;
     }
 
+    public String getName() {
+        return name;
+    }
+
     @Override
     public Tuple2<SubcommandVal, Seq<String>> parse(Seq<String> args) throws ArgParseException {
         String command = args.headOption()
-                .getOrElseThrow(() -> new ArgParseException("Args is empty", args));
+                .getOrElseThrow(() -> new ArgParseException(
+                        "Arguments list is empty (expected subcommand '%s')".formatted(name), args));
         if (!name.equals(command)) {
             throw new ArgParseException("Expected subcommand '%s'".formatted(name), args);
         }

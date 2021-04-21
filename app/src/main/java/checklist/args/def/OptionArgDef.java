@@ -53,7 +53,7 @@ public class OptionArgDef implements ArgsDef<OptionArgVal> {
     @Override
     public Tuple2<OptionArgVal, Seq<String>> parse(Seq<String> args) throws ArgParseException {
         if (args.isEmpty()) {
-            throw new ArgParseException("Args is empty", args);
+            throw new ArgParseException("Arguments list is empty", args);
         }
         Option<Tuple2<OptionArgVal, Seq<String>>> longOpt = tryParseLong(args);
         if (longOpt.isDefined()) {

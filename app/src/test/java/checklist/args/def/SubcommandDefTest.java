@@ -19,7 +19,7 @@ class SubcommandDefTest {
     public void parseEmptyArgs() {
         assertThatThrownBy(() -> new SubcommandDef("sub", new ArgsBlockDef()).parse(List.empty()))
                 .isInstanceOfSatisfying(ArgParseException.class,
-                        ex -> assertThat(ex).hasMessage("Args is empty: []"));
+                        ex -> assertThat(ex).hasMessage("Arguments list is empty (expected subcommand 'sub'): []"));
     }
 
     @Test
