@@ -33,6 +33,10 @@ public class ArgsBlockDef implements ArgsDef<ArgsBlockVal> {
         return pos;
     }
 
+    public ArgsBlockDef() {
+        this(List.empty(), List.empty());
+    }
+
     public ArgsBlockDef(Seq<OptionArgDef> options, Seq<PositionalArgDef> positional) {
         this.longOptions = options.toMap(OptionArgDef::getName, Function.identity());
         this.shortOptions = options
