@@ -8,6 +8,7 @@ import checklist.args.OptionsUtil;
 import checklist.args.val.ArgsBlockVal;
 import checklist.args.val.OptionArgVal;
 import checklist.args.val.PositionalArgVal;
+import checklist.util.Strings;
 import io.vavr.Predicates;
 import io.vavr.Tuple;
 import io.vavr.Tuple2;
@@ -67,24 +68,24 @@ public class ArgsBlockDef implements ArgsDef<ArgsBlockVal> {
 
             break; // block is over
         }
-        // TODO error if not all mandatory positional args present
+        state.checkAllMandatoryPositionalPresent();
         return state.getResult();
     }
 
     private ArgParseException createUnexpectedOptException(String optName, ParseState state) {
         return new ArgParseException("Unexpected option '" + optName + "'",
-                state.getArgs());
+                state.args);
     }
 
     private static class ParseState {
         private Seq<String> args;
-        private Seq<PositionalArgDef> curPositionalDefs;
+        private Seq<PositionalArgDef> restPositionalDefs;
         private List<OptionArgVal> options = List.empty();
         private List<PositionalArgVal> positionalVals = List.empty();
 
         public ParseState(Seq<String> args, Seq<PositionalArgDef> positionalDefs) {
             this.args = args;
-            curPositionalDefs = positionalDefs;
+            restPositionalDefs = positionalDefs;
         }
 
         public boolean hasNext() {
@@ -114,14 +115,23 @@ public class ArgsBlockDef implements ArgsDef<ArgsBlockVal> {
         }
 
         public boolean hasNextPositional() {
-            return curPositionalDefs.nonEmpty();
+            return restPositionalDefs.nonEmpty();
         }
 
         public void parsePositional() throws ArgParseException {
-            Tuple2<PositionalArgVal, Seq<String>> res = curPositionalDefs.head().parse(args);
-            curPositionalDefs = curPositionalDefs.tail();
+            Tuple2<PositionalArgVal, Seq<String>> res = restPositionalDefs.head().parse(args);
+            restPositionalDefs = restPositionalDefs.tail();
             positionalVals = positionalVals.append(res._1);
             args = res._2;
+        }
+
+        public void checkAllMandatoryPositionalPresent() throws ArgParseException {
+            Seq<PositionalArgDef> restMandatoryArgs = restPositionalDefs.takeWhile(IS_MANDATORY);
+            if (restMandatoryArgs.nonEmpty()) {
+                String msg = "Expected positional parameters %s".formatted(
+                        Strings.seqToString(restMandatoryArgs.map(PositionalArgDef::getName)));
+                throw new ArgParseException(msg, args);
+            }
         }
     }
 }

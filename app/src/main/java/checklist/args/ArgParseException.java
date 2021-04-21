@@ -1,5 +1,6 @@
 package checklist.args;
 
+import checklist.util.Strings;
 import io.vavr.collection.Seq;
 
 public class ArgParseException extends Exception {
@@ -19,6 +20,6 @@ public class ArgParseException extends Exception {
     }
 
     private static String getMessage(String msg, Seq<String> args) {
-        return msg + ": " + args.mkString("[", ", ", "]");
+        return msg + ": " + Strings.seqToString(args);
     }
 }

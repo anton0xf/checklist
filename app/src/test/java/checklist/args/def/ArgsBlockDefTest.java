@@ -20,7 +20,7 @@ class ArgsBlockDefTest {
                 List.empty());
         Tuple2<ArgsBlockVal, Seq<String>> res = def.parse(List.of("--help", "rest"));
         assertThat(res._1.getOptions()).hasOnlyOneElementSatisfying(
-                        option -> assertThat(option.getName()).isEqualTo("help"));
+                option -> assertThat(option.getName()).isEqualTo("help"));
         assertThat(res._2).isEqualTo(List.of("rest"));
     }
 
@@ -64,8 +64,8 @@ class ArgsBlockDefTest {
         assertThatThrownBy(() -> new ArgsBlockDef(
                 List.empty(),
                 List.of(PositionalArgDef.optional("o1"), new PositionalArgDef("m1"))))
-        .isInstanceOfSatisfying(IllegalArgumentException.class,
-                ex -> assertThat(ex).hasMessage("Optional positional parameters should go at the end"));
+                .isInstanceOfSatisfying(IllegalArgumentException.class,
+                        ex -> assertThat(ex).hasMessage("Optional positional parameters should go at the end"));
     }
 
     @Test
@@ -78,5 +78,16 @@ class ArgsBlockDefTest {
         assertThat(res._1.getPositional()).hasOnlyOneElementSatisfying(
                 arg -> assertThat(arg.getValue()).isEqualTo("test"));
         assertThat(res._2).isEqualTo(List.of("rest"));
+    }
+
+    @Test
+    public void parseNotEnoughPositional() {
+        ArgsBlockDef def = new ArgsBlockDef(
+                List.of(new OptionArgDef("help", "h")),
+                List.of(new PositionalArgDef("name"),
+                        new PositionalArgDef("other")));
+        assertThatThrownBy(() -> def.parse(List.of("test", "-h")))
+                .isInstanceOfSatisfying(ArgParseException.class,
+                        ex -> assertThat(ex).hasMessage("Expected positional parameters [other]: []"));
     }
 }
