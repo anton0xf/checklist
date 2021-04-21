@@ -1,12 +1,14 @@
 package checklist.args.def;
 
 import java.util.function.Function;
+import java.util.function.Predicate;
 
 import checklist.args.ArgParseException;
 import checklist.args.OptionsUtil;
 import checklist.args.val.ArgsBlockVal;
 import checklist.args.val.OptionArgVal;
 import checklist.args.val.PositionalArgVal;
+import io.vavr.Predicates;
 import io.vavr.Tuple;
 import io.vavr.Tuple2;
 import io.vavr.collection.List;
@@ -14,16 +16,25 @@ import io.vavr.collection.Map;
 import io.vavr.collection.Seq;
 
 public class ArgsBlockDef implements ArgsDef<ArgsBlockVal> {
+    private static final Predicate<PositionalArgDef> IS_MANDATORY = Predicates.not(PositionalArgDef::isOptional);
+
     private final Map<String, OptionArgDef> longOptions;
     private final Map<String, OptionArgDef> shortOptions;
     private final Seq<PositionalArgDef> positional;
+
+    private static Seq<PositionalArgDef> validatePositional(Seq<PositionalArgDef> pos) {
+        if (pos.dropWhile(IS_MANDATORY).exists(IS_MANDATORY)) {
+            throw new IllegalArgumentException("Optional positional parameters should go at the end");
+        }
+        return pos;
+    }
 
     public ArgsBlockDef(Seq<OptionArgDef> options, Seq<PositionalArgDef> positional) {
         this.longOptions = options.toMap(OptionArgDef::getName, Function.identity());
         this.shortOptions = options
                 .filter(option -> option.getShortName().isDefined())
                 .toMap(optionArgDef -> optionArgDef.getShortName().get(), Function.identity());
-        this.positional = positional;
+        this.positional = validatePositional(positional);
     }
 
     @Override

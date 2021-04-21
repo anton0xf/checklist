@@ -8,10 +8,24 @@ import io.vavr.Tuple2;
 import io.vavr.collection.Seq;
 
 public class PositionalArgDef implements ArgsDef<PositionalArgVal> {
+    private final boolean optional;
     private final String name;
 
+    public static PositionalArgDef optional(String name) {
+        return new PositionalArgDef(true, name);
+    }
+
     public PositionalArgDef(String name) {
+        this(false, name);
+    }
+
+    private PositionalArgDef(boolean optional, String name) {
+        this.optional = optional;
         this.name = name;
+    }
+
+    public boolean isOptional() {
+        return optional;
     }
 
     public String getName() {

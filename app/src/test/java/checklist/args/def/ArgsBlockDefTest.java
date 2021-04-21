@@ -60,6 +60,15 @@ class ArgsBlockDefTest {
     }
 
     @Test
+    public void optionalPositionalShouldGoAtTheEnd() {
+        assertThatThrownBy(() -> new ArgsBlockDef(
+                List.empty(),
+                List.of(PositionalArgDef.optional("o1"), new PositionalArgDef("m1"))))
+        .isInstanceOfSatisfying(IllegalArgumentException.class,
+                ex -> assertThat(ex).hasMessage("Optional positional parameters should go at the end"));
+    }
+
+    @Test
     public void parsePositional() throws ArgParseException {
         ArgsBlockDef def = new ArgsBlockDef(
                 List.empty(),
