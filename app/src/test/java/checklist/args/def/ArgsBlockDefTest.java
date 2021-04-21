@@ -5,9 +5,12 @@ import org.junit.jupiter.api.Test;
 import checklist.args.ArgParseException;
 import checklist.args.val.ArgsBlockVal;
 import checklist.args.val.OptionArgVal;
+import checklist.args.val.PositionalArgVal;
+import io.vavr.Tuple;
 import io.vavr.Tuple2;
 import io.vavr.collection.List;
 import io.vavr.collection.Seq;
+import io.vavr.control.Option;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
@@ -89,5 +92,31 @@ class ArgsBlockDefTest {
         assertThatThrownBy(() -> def.parse(List.of("test", "-h")))
                 .isInstanceOfSatisfying(ArgParseException.class,
                         ex -> assertThat(ex).hasMessage("Expected positional parameters [other]: []"));
+    }
+
+    @Test
+    public void parseComplex() throws ArgParseException {
+        ArgsBlockDef def = new ArgsBlockDef(
+                List.of(new OptionArgDef("verbose", "v"),
+                        OptionArgDef.parametrized("max-depth", "d"),
+                        OptionArgDef.parametrized("long"),
+                        new OptionArgDef("short", "s")),
+                List.of(new PositionalArgDef("m1"),
+                        new PositionalArgDef("m2"),
+                        PositionalArgDef.optional("o1"),
+                        PositionalArgDef.optional("o2")));
+        Tuple2<ArgsBlockVal, Seq<String>> res = def.parse(List.of("m1v", "-vd1", "m2v", "--long", "lp", "o1v", "-s"));
+        assertThat(res._1.getOptions()).hasSize(4)
+                .satisfies(opts -> assertThat(opts)
+                        .extracting(opt -> Tuple.of(opt.getName(), opt.getValue()))
+                        .containsExactlyElementsOf(List.of(
+                                Tuple.of("verbose", Option.none()),
+                                Tuple.of("max-depth", Option.some("1")),
+                                Tuple.of("long", Option.some("lp")),
+                                Tuple.of("short", Option.none()))));
+        assertThat(res._1.getPositional()).hasSize(3)
+                .extracting(PositionalArgVal::getValue)
+                .containsExactly("m1v", "m2v", "o1v");
+        assertThat(res._2).isEmpty();
     }
 }
