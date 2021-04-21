@@ -11,6 +11,10 @@ import io.vavr.control.Option;
 import static checklist.args.OptionsUtil.toLongOpt;
 import static checklist.args.OptionsUtil.tryParseLongOpt;
 
+/**
+ * Define command line option like "-h" or "--help",
+ * "-d 3", "--depth=3", "--depth 3" and "-opid" (same as "-o pid").
+ */
 public class OptionArgDef implements ArgsDef<OptionArgVal> {
     private final String name;
     private final Option<String> shortName;

@@ -2,6 +2,10 @@ package checklist.args.val;
 
 import io.vavr.control.Option;
 
+/**
+ * Represent command line option like "-h" or "--help",
+ * "-d 3", "--depth=3", "--depth 3" and "-opid" (same as "-o pid").
+ */
 public class OptionArgVal implements ArgsVal {
     private final String name;
     private final Option<String> value;

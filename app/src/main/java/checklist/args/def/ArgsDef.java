@@ -5,6 +5,10 @@ import checklist.args.val.ArgsVal;
 import io.vavr.Tuple2;
 import io.vavr.collection.Seq;
 
+/**
+ * Command line arguments definition.
+ * Used to parse arguments and to generate usage documentation.
+ */
 public interface ArgsDef<R extends ArgsVal> {
     Tuple2<R, Seq<String>> parse(Seq<String> args) throws ArgParseException;
 }

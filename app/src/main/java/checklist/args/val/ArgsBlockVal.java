@@ -2,6 +2,9 @@ package checklist.args.val;
 
 import io.vavr.collection.Seq;
 
+/**
+ * Represent sequence of options and positional (may be optional) arguments
+ */
 public class ArgsBlockVal implements ArgsVal {
     private final Seq<OptionArgVal> options;
     private final Seq<PositionalArgVal> positional;

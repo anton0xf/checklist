@@ -16,6 +16,9 @@ import io.vavr.collection.List;
 import io.vavr.collection.Map;
 import io.vavr.collection.Seq;
 
+/**
+ * Define sequence of options and positional (may be optional) arguments
+ */
 public class ArgsBlockDef implements ArgsDef<ArgsBlockVal> {
     private static final Predicate<PositionalArgDef> IS_MANDATORY = Predicates.not(PositionalArgDef::isOptional);
 
