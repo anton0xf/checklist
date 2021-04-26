@@ -18,24 +18,30 @@ import static checklist.args.OptionsUtil.tryParseLongOpt;
 public class OptionArgDef implements ArgsDef<OptionArgVal> {
     private final String name;
     private final Option<String> shortName;
+    private final String description;
     private final boolean hasParameter;
 
     public OptionArgDef(String name) {
-        this(name, Option.none(), false);
+        this(name, Option.none(), "", false);
     }
 
-    private OptionArgDef(String name, Option<String> shortName, boolean hasParameter) {
+    private OptionArgDef(String name, Option<String> shortName, String description, boolean hasParameter) {
         this.name = name;
         this.shortName = shortName.peek(OptionsUtil::assertShortOptName);
+        this.description = description;
         this.hasParameter = hasParameter;
     }
 
     public OptionArgDef withShortName(String shortName) {
-        return new OptionArgDef(this.name, Option.some(shortName), this.hasParameter);
+        return new OptionArgDef(this.name, Option.some(shortName), description, this.hasParameter);
+    }
+
+    public OptionArgDef withDescription(String description) {
+        return new OptionArgDef(this.name, this.shortName, description, this.hasParameter);
     }
 
     public OptionArgDef withParameter() {
-        return new OptionArgDef(this.name, this.shortName, true);
+        return new OptionArgDef(this.name, this.shortName, this.description, true);
     }
 
     public String getName() {
@@ -44,6 +50,10 @@ public class OptionArgDef implements ArgsDef<OptionArgVal> {
 
     public Option<String> getShortName() {
         return shortName;
+    }
+
+    public String getDescription() {
+        return description;
     }
 
     @Override
