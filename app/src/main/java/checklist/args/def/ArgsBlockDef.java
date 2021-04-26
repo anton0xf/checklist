@@ -46,6 +46,11 @@ public class ArgsBlockDef implements ArgsDef<ArgsBlockVal> {
     }
 
     @Override
+    public <R> R visit(ArgsDefVisitor<R> visitor) {
+        return visitor.visitArgsBlock(this);
+    }
+
+    @Override
     public Tuple2<ArgsBlockVal, Seq<String>> parse(Seq<String> args) throws ArgParseException {
         ParseState state = new ParseState(args, positional);
         while (state.hasNext()) {

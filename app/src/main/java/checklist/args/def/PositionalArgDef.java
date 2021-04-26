@@ -38,4 +38,9 @@ public class PositionalArgDef implements ArgsDef<PositionalArgVal> {
         }
         return Tuple.of(new PositionalArgVal(args.head()), args.tail());
     }
+
+    @Override
+    public <R> R visit(ArgsDefVisitor<R> visitor) {
+        return visitor.visitPositional(this);
+    }
 }

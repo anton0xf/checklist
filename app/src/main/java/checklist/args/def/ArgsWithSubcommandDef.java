@@ -21,6 +21,11 @@ public class ArgsWithSubcommandDef implements ArgsDef<ArgsWithSubcommandVal> {
     }
 
     @Override
+    public <R> R visit(ArgsDefVisitor<R> visitor) {
+        return visitor.visitArgsWithSubcommand(this);
+    }
+
+    @Override
     public Tuple2<ArgsWithSubcommandVal, Seq<String>> parse(Seq<String> args) throws ArgParseException {
         Tuple2<ArgsBlockVal, Seq<String>> parsedGlobal = globalArgs.parse(args);
         Seq<String> restArgs = parsedGlobal._2;

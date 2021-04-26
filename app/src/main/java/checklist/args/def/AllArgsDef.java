@@ -16,6 +16,11 @@ public class AllArgsDef<R extends ArgsVal, T extends ArgsDef<R>> implements Args
     }
 
     @Override
+    public <R1> R1 visit(ArgsDefVisitor<R1> visitor) {
+        return def.visit(visitor);
+    }
+
+    @Override
     public Tuple2<R, Seq<String>> parse(Seq<String> args) throws ArgParseException {
         Tuple2<R, Seq<String>> res = def.parse(args);
         if (res._2.nonEmpty()) {

@@ -10,5 +10,6 @@ import io.vavr.collection.Seq;
  * Used to parse arguments and to generate usage documentation.
  */
 public interface ArgsDef<R extends ArgsVal> {
+    <R> R visit(ArgsDefVisitor<R> visitor);
     Tuple2<R, Seq<String>> parse(Seq<String> args) throws ArgParseException;
 }

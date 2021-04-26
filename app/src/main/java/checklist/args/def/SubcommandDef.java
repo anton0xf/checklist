@@ -21,6 +21,11 @@ public class SubcommandDef implements ArgsDef<SubcommandVal> {
     }
 
     @Override
+    public <R> R visit(ArgsDefVisitor<R> visitor) {
+        return visitor.visitSubcommand(this);
+    }
+
+    @Override
     public Tuple2<SubcommandVal, Seq<String>> parse(Seq<String> args) throws ArgParseException {
         String command = args.headOption()
                 .getOrElseThrow(() -> new ArgParseException(

@@ -51,6 +51,11 @@ public class OptionArgDef implements ArgsDef<OptionArgVal> {
     }
 
     @Override
+    public <R> R visit(ArgsDefVisitor<R> visitor) {
+        return visitor.visitOption(this);
+    }
+
+    @Override
     public Tuple2<OptionArgVal, Seq<String>> parse(Seq<String> args) throws ArgParseException {
         if (args.isEmpty()) {
             throw new ArgParseException("Arguments list is empty", args);
