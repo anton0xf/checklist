@@ -45,7 +45,7 @@ class ArgsWithSubcommandDefTest {
     @Test
     public void parse() throws ArgParseException {
         ArgsBlockDef globalArgs = new ArgsBlockDef(
-                List.of(new OptionArgDef("verbose", "v")),
+                List.of(new OptionArgDef("verbose").withShortName("v")),
                 List.empty());
         ArgsBlockDef commandArgs = new ArgsBlockDef(
                 List.of(new OptionArgDef("debug")),

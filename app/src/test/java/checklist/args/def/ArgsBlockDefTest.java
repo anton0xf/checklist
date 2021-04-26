@@ -41,7 +41,7 @@ class ArgsBlockDefTest {
     @Test
     public void parseShortOption() throws ArgParseException {
         ArgsBlockDef def = new ArgsBlockDef(
-                List.of(new OptionArgDef("help", "h")),
+                List.of(new OptionArgDef("help").withShortName("h")),
                 List.empty());
         Tuple2<ArgsBlockVal, Seq<String>> res = def.parse(List.of("-h", "rest"));
         assertThat(res._1.getOptions()).hasOnlyOneElementSatisfying(
@@ -52,8 +52,8 @@ class ArgsBlockDefTest {
     @Test
     public void parseShortOptions() throws ArgParseException {
         ArgsBlockDef def = new ArgsBlockDef(
-                List.of(new OptionArgDef("verbose", "v"),
-                        new OptionArgDef("quiet", "q")),
+                List.of(new OptionArgDef("verbose").withShortName("v"),
+                        new OptionArgDef("quiet").withShortName("q")),
                 List.empty());
         Tuple2<ArgsBlockVal, Seq<String>> res = def.parse(List.of("-vq", "rest"));
         assertThat(res._1.getOptions()).hasSize(2)
@@ -86,7 +86,7 @@ class ArgsBlockDefTest {
     @Test
     public void parseNotEnoughPositional() {
         ArgsBlockDef def = new ArgsBlockDef(
-                List.of(new OptionArgDef("help", "h")),
+                List.of(new OptionArgDef("help").withShortName("h")),
                 List.of(new PositionalArgDef("name"),
                         new PositionalArgDef("other")));
         assertThatThrownBy(() -> def.parse(List.of("test", "-h")))
@@ -97,10 +97,10 @@ class ArgsBlockDefTest {
     @Test
     public void parseComplex() throws ArgParseException {
         ArgsBlockDef def = new ArgsBlockDef(
-                List.of(new OptionArgDef("verbose", "v"),
-                        OptionArgDef.parametrized("max-depth", "d"),
-                        OptionArgDef.parametrized("long"),
-                        new OptionArgDef("short", "s")),
+                List.of(new OptionArgDef("verbose").withShortName("v"),
+                        new OptionArgDef("max-depth").withShortName("d").withParameter(),
+                        new OptionArgDef("long").withParameter(),
+                        new OptionArgDef("short").withShortName("s")),
                 List.of(new PositionalArgDef("m1"),
                         new PositionalArgDef("m2"),
                         PositionalArgDef.optional("o1"),

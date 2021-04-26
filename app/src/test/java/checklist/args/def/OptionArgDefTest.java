@@ -46,7 +46,8 @@ class OptionArgDefTest {
 
     @Test
     public void parseParametrizedLongWithoutParameter() {
-        assertThatThrownBy(() -> OptionArgDef.parametrized("sort").parse(List.of("--sort")))
+        OptionArgDef def = new OptionArgDef("sort").withParameter();
+        assertThatThrownBy(() -> def.parse(List.of("--sort")))
                 .isInstanceOfSatisfying(ArgParseException.class,
                         ex -> assertThat(ex).hasMessage(
                                 "Option 'sort' requires parameter but args list is empty: []"));
@@ -54,14 +55,16 @@ class OptionArgDefTest {
 
     @Test
     public void parseParametrizedLongWithOptionInsteadOfParameter() {
-        assertThatThrownBy(() -> OptionArgDef.parametrized("sort").parse(List.of("--sort", "-h")))
+        OptionArgDef def = new OptionArgDef("sort").withParameter();
+        assertThatThrownBy(() -> def.parse(List.of("--sort", "-h")))
                 .isInstanceOfSatisfying(ArgParseException.class,
                         ex -> assertThat(ex).hasMessage("Option 'sort' requires parameter: [-h]"));
     }
 
     @Test
     public void parseParametrizedLong() throws ArgParseException {
-        Tuple2<OptionArgVal, Seq<String>> res = OptionArgDef.parametrized("sort")
+        OptionArgDef def = new OptionArgDef("sort").withParameter();
+        Tuple2<OptionArgVal, Seq<String>> res = def
                 .parse(List.of("--sort", "name", "rest"));
         assertThat(res._1).satisfies(opt -> {
             assertThat(opt.getName()).isEqualTo("sort");
@@ -72,7 +75,8 @@ class OptionArgDefTest {
 
     @Test
     public void parseJoinedParametrizedLong() throws ArgParseException {
-        Tuple2<OptionArgVal, Seq<String>> res = OptionArgDef.parametrized("sort")
+        OptionArgDef def = new OptionArgDef("sort").withParameter();
+        Tuple2<OptionArgVal, Seq<String>> res = def
                 .parse(List.of("--sort=name", "rest"));
         assertThat(res._1).satisfies(opt -> {
             assertThat(opt.getName()).isEqualTo("sort");
@@ -91,38 +95,41 @@ class OptionArgDefTest {
 
     @Test
     public void toLongShortOpt() {
-        assertThatThrownBy(() -> new OptionArgDef("help", "hl"))
+        assertThatThrownBy(() -> new OptionArgDef("help").withShortName("hl"))
                 .isInstanceOfSatisfying(IllegalArgumentException.class,
                         ex -> assertThat(ex).hasMessage("Short option len should be 1: 'hl'"));
     }
 
     @Test
     public void parseShort() throws ArgParseException {
-        Tuple2<OptionArgVal, Seq<String>> res = new OptionArgDef("help", "h")
-                .parse(List.of("-h", "rest"));
+        OptionArgDef def = new OptionArgDef("help").withShortName("h");
+        Tuple2<OptionArgVal, Seq<String>> res = def.parse(List.of("-h", "rest"));
         assertThat(res._1.getName()).isEqualTo("help");
         assertThat(res._2).isEqualTo(List.of("rest"));
     }
 
     @Test
     public void parseShortFromOtherOption() {
-        List<String> args = List.of("-o", "rest");
-        assertThatThrownBy(() -> new OptionArgDef("help", "h").parse(args))
+        OptionArgDef def = new OptionArgDef("help").withShortName("h");
+        assertThatThrownBy(() -> def.parse(List.of("-o", "rest")))
                 .isInstanceOfSatisfying(ArgParseException.class,
                         ex -> assertThat(ex).hasMessage("Unexpected option (expected '-h' or '--help'): [-o, rest]"));
     }
 
     @Test
     public void parseJoinedShort() throws ArgParseException {
-        Tuple2<OptionArgVal, Seq<String>> res = new OptionArgDef("help", "h")
-                .parse(List.of("-hr", "rest"));
+        OptionArgDef def = new OptionArgDef("help").withShortName("h");
+        Tuple2<OptionArgVal, Seq<String>> res = def.parse(List.of("-hr", "rest"));
         assertThat(res._1.getName()).isEqualTo("help");
         assertThat(res._2).isEqualTo(List.of("-r", "rest"));
     }
 
     @Test
     public void parseParametrizedShort() throws ArgParseException {
-        Tuple2<OptionArgVal, Seq<String>> res = OptionArgDef.parametrized("max-depth", "d")
+        OptionArgDef def = new OptionArgDef("max-depth")
+                .withShortName("d")
+                .withParameter();
+        Tuple2<OptionArgVal, Seq<String>> res = def
                 .parse(List.of("-d", "2", "rest"));
         assertThat(res._1).satisfies(opt -> {
             assertThat(opt.getName()).isEqualTo("max-depth");
@@ -133,7 +140,10 @@ class OptionArgDefTest {
 
     @Test
     public void parseParametrizedShortWithoutParameter() {
-        assertThatThrownBy(() -> OptionArgDef.parametrized("max-depth", "d").parse(List.of("-d")))
+        OptionArgDef def = new OptionArgDef("max-depth")
+                .withShortName("d")
+                .withParameter();
+        assertThatThrownBy(() -> def.parse(List.of("-d")))
                 .isInstanceOfSatisfying(ArgParseException.class,
                         ex -> assertThat(ex).hasMessage(
                                 "Option 'max-depth' requires parameter but args list is empty: []"));
@@ -141,7 +151,9 @@ class OptionArgDefTest {
 
     @Test
     public void parseParametrizedShortWithOptionInsteadOfParameter() {
-        OptionArgDef def = OptionArgDef.parametrized("max-depth", "d");
+        OptionArgDef def = new OptionArgDef("max-depth")
+                .withShortName("d")
+                .withParameter();
         assertThatThrownBy(() -> def.parse(List.of("-d", "-v")))
                 .isInstanceOfSatisfying(ArgParseException.class,
                         ex -> assertThat(ex).hasMessage("Option 'max-depth' requires parameter: [-v]"));
@@ -149,8 +161,10 @@ class OptionArgDefTest {
 
     @Test
     public void parseJoinedParametrizedShort() throws ArgParseException {
-        Tuple2<OptionArgVal, Seq<String>> res = OptionArgDef.parametrized("max-depth", "d")
-                .parse(List.of("-d2", "rest"));
+        OptionArgDef def = new OptionArgDef("max-depth")
+                .withShortName("d")
+                .withParameter();
+        Tuple2<OptionArgVal, Seq<String>> res = def.parse(List.of("-d2", "rest"));
         assertThat(res._1).satisfies(opt -> {
             assertThat(opt.getName()).isEqualTo("max-depth");
             assertThat(opt.getValue()).isEqualTo(Option.of("2"));

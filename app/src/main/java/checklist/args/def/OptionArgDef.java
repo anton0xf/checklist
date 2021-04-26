@@ -24,22 +24,18 @@ public class OptionArgDef implements ArgsDef<OptionArgVal> {
         this(name, Option.none(), false);
     }
 
-    public OptionArgDef(String name, String shortName) {
-        this(name, Option.some(shortName), false);
-    }
-
-    public static OptionArgDef parametrized(String name) {
-        return new OptionArgDef(name, Option.none(), true);
-    }
-
-    public static OptionArgDef parametrized(String name, String shortName) {
-        return new OptionArgDef(name, Option.some(shortName), true);
-    }
-
     private OptionArgDef(String name, Option<String> shortName, boolean hasParameter) {
         this.name = name;
         this.shortName = shortName.peek(OptionsUtil::assertShortOptName);
         this.hasParameter = hasParameter;
+    }
+
+    public OptionArgDef withShortName(String shortName) {
+        return new OptionArgDef(this.name, Option.some(shortName), this.hasParameter);
+    }
+
+    public OptionArgDef withParameter() {
+        return new OptionArgDef(this.name, this.shortName, true);
     }
 
     public String getName() {
