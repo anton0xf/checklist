@@ -25,9 +25,9 @@ public class TextUsageVisitor implements ArgsDefVisitor<Seq<String>> {
 
     @Override
     public Seq<String> visitOption(OptionArgDef def) {
-        // TODO support short option
         // TODO support parameter
-        String optUsage = "%s\t%s".formatted(
+        String optUsage = "%3s %s\t%s".formatted(
+                def.getShortName().map(name -> OptionsUtil.toShortOpt(name) + ",").getOrElse(""),
                 OptionsUtil.toLongOpt(def.getName()),
                 def.getDescription());
         return List.of(optUsage);

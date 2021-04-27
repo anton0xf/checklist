@@ -12,6 +12,15 @@ class TextUsageVisitorTest {
         OptionArgDef def = new OptionArgDef("help")
                 .withDescription("show this help message");
         Seq<String> res = new TextUsageVisitor().visitOption(def);
-        assertThat(res).containsExactly("--help\tshow this help message");
+        assertThat(res).containsExactly("    --help\tshow this help message");
+    }
+
+    @Test
+    public void visitShortOption() {
+        OptionArgDef def = new OptionArgDef("help")
+                .withShortName("h")
+                .withDescription("show this help message");
+        Seq<String> res = new TextUsageVisitor().visitOption(def);
+        assertThat(res).containsExactly("-h, --help\tshow this help message");
     }
 }
