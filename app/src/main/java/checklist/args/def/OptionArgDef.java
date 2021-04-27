@@ -16,32 +16,37 @@ import static checklist.args.OptionsUtil.tryParseLongOpt;
  * "-d 3", "--depth=3", "--depth 3" and "-opid" (same as "-o pid").
  */
 public class OptionArgDef implements ArgsDef<OptionArgVal> {
+    public static final String DEFAULT_PARAMETER_NAME = "value";
     private final String name;
     private final Option<String> shortName;
+    private final Option<String> parameterName;
     private final String description;
-    private final boolean hasParameter;
 
     public OptionArgDef(String name) {
-        this(name, Option.none(), "", false);
+        this(name, Option.none(), Option.none(), "");
     }
 
-    private OptionArgDef(String name, Option<String> shortName, String description, boolean hasParameter) {
+    private OptionArgDef(String name, Option<String> shortName, Option<String> parameterName, String description) {
         this.name = name;
         this.shortName = shortName.peek(OptionsUtil::assertShortOptName);
+        this.parameterName = parameterName;
         this.description = description;
-        this.hasParameter = hasParameter;
     }
 
     public OptionArgDef withShortName(String shortName) {
-        return new OptionArgDef(this.name, Option.some(shortName), description, this.hasParameter);
+        return new OptionArgDef(this.name, Option.some(shortName), this.parameterName, this.description);
     }
 
-    public OptionArgDef withDescription(String description) {
-        return new OptionArgDef(this.name, this.shortName, description, this.hasParameter);
+    public OptionArgDef withParameter(String name) {
+        return new OptionArgDef(this.name, this.shortName, Option.some(name), this.description);
     }
 
     public OptionArgDef withParameter() {
-        return new OptionArgDef(this.name, this.shortName, this.description, true);
+        return withParameter(DEFAULT_PARAMETER_NAME);
+    }
+
+    public OptionArgDef withDescription(String description) {
+        return new OptionArgDef(this.name, this.shortName, this.parameterName, description);
     }
 
     public String getName() {
@@ -50,6 +55,14 @@ public class OptionArgDef implements ArgsDef<OptionArgVal> {
 
     public Option<String> getShortName() {
         return shortName;
+    }
+
+    public Option<String> getParameterName() {
+        return parameterName;
+    }
+
+    public boolean hasParameter() {
+        return parameterName.isDefined();
     }
 
     public String getDescription() {
@@ -93,7 +106,7 @@ public class OptionArgDef implements ArgsDef<OptionArgVal> {
     private Tuple2<OptionArgVal, Seq<String>> parseLong(Option<String> parameter, Seq<String> args)
             throws ArgParseException {
         Seq<String> otherArgs = args.tail();
-        if (hasParameter) {
+        if (hasParameter()) {
             if (parameter.isDefined()) {
                 return Tuple.of(new OptionArgVal(name, parameter.get()), otherArgs);
             }
@@ -137,7 +150,7 @@ public class OptionArgDef implements ArgsDef<OptionArgVal> {
     private Tuple2<OptionArgVal, Seq<String>> parseShort(Seq<String> parsedOpt, Seq<String> otherArgs)
             throws ArgParseException {
         Option<String> argRest = parsedOpt.tail().headOption();
-        if (hasParameter) {
+        if (hasParameter()) {
             if (argRest.isDefined()) {
                 return Tuple.of(new OptionArgVal(name, argRest.get()), otherArgs);
             }
@@ -148,5 +161,4 @@ public class OptionArgDef implements ArgsDef<OptionArgVal> {
                 .getOrElse(otherArgs);
         return Tuple.of(new OptionArgVal(name), argsRest);
     }
-
 }

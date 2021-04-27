@@ -25,11 +25,12 @@ public class TextUsageVisitor implements ArgsDefVisitor<Seq<String>> {
 
     @Override
     public Seq<String> visitOption(OptionArgDef def) {
-        // TODO support parameter
-        String optUsage = "%3s %s\t%s".formatted(
-                def.getShortName().map(name -> OptionsUtil.toShortOpt(name) + ",").getOrElse(""),
-                OptionsUtil.toLongOpt(def.getName()),
-                def.getDescription());
+        String shortOpt = def.getShortName()
+                .map(name -> OptionsUtil.toShortOpt(name) + ",")
+                .getOrElse("");
+        String longOpt = OptionsUtil.toLongOpt(def.getName());
+        String parameter = def.getParameterName().map(name -> "=" + name).getOrElse("");
+        String optUsage = "%3s %s\t%s".formatted(shortOpt, longOpt + parameter, def.getDescription());
         return List.of(optUsage);
     }
 
