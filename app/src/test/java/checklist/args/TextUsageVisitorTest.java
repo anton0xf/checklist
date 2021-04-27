@@ -1,6 +1,7 @@
 package checklist.args;
 
 import checklist.args.def.OptionArgDef;
+import checklist.args.def.PositionalArgDef;
 import io.vavr.collection.Seq;
 import org.junit.jupiter.api.Test;
 
@@ -60,5 +61,13 @@ class TextUsageVisitorTest {
                 .withDescription("max depth");
         Seq<String> res = new TextUsageVisitor().visitOption(def);
         assertThat(res).containsExactly("-d, --max-depth=num\tmax depth");
+    }
+
+    @Test
+    public void visitPositionalArg() {
+        PositionalArgDef def = new PositionalArgDef("file")
+                .withDescription("file name to save");
+        Seq<String> res = new TextUsageVisitor().visitPositional(def);
+        assertThat(res).containsExactly("file\tfile name to save");
     }
 }

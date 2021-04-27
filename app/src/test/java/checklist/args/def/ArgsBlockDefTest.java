@@ -66,7 +66,7 @@ class ArgsBlockDefTest {
     public void optionalPositionalShouldGoAtTheEnd() {
         assertThatThrownBy(() -> new ArgsBlockDef(
                 List.empty(),
-                List.of(PositionalArgDef.optional("o1"), new PositionalArgDef("m1"))))
+                List.of(new PositionalArgDef("o1").optional(), new PositionalArgDef("m1"))))
                 .isInstanceOfSatisfying(IllegalArgumentException.class,
                         ex -> assertThat(ex).hasMessage("Optional positional parameters should go at the end"));
     }
@@ -103,8 +103,8 @@ class ArgsBlockDefTest {
                         new OptionArgDef("short").withShortName("s")),
                 List.of(new PositionalArgDef("m1"),
                         new PositionalArgDef("m2"),
-                        PositionalArgDef.optional("o1"),
-                        PositionalArgDef.optional("o2")));
+                        new PositionalArgDef("o1").optional(),
+                        new PositionalArgDef("o2").optional()));
         Tuple2<ArgsBlockVal, Seq<String>> res = def.parse(List.of("m1v", "-vd1", "m2v", "--long", "lp", "o1v", "-s"));
         assertThat(res._1.getOptions()).hasSize(4)
                 .satisfies(opts -> assertThat(opts)
@@ -125,7 +125,7 @@ class ArgsBlockDefTest {
         ArgsBlockDef def = new ArgsBlockDef(
                 List.of(new OptionArgDef("verbose")),
                 List.of(new PositionalArgDef("m1"),
-                        PositionalArgDef.optional("o1")));
+                        new PositionalArgDef("o1").optional()));
         Tuple2<ArgsBlockVal, Seq<String>> res = def.parse(List.of("--verbose", "m1v", "--", "--o1v", "rest"));
         assertThat(res._1.getOptions()).hasOnlyOneElementSatisfying(
                 opt -> assertThat(opt.getName()).isEqualTo("verbose"));

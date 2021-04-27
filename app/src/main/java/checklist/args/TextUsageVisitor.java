@@ -36,7 +36,6 @@ public class TextUsageVisitor implements ArgsDefVisitor<Seq<String>> {
 
     @Override
     public Seq<String> visitPositional(PositionalArgDef def) {
-        // TODO implement
-        throw new UnsupportedOperationException("Unimplemented yet");
+        return List.of("%s\t%s".formatted(def.getName(), def.getDescription()));
     }
 }
