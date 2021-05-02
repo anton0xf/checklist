@@ -1,14 +1,8 @@
 package checklist;
 
-import java.io.File;
-
 import checklist.args.ArgParseException;
-import checklist.args.def.AllArgsDef;
-import checklist.args.def.ArgsBlockDef;
-import checklist.args.def.ArgsDef;
-import checklist.args.def.ArgsWithSubcommandDef;
-import checklist.args.def.PositionalArgDef;
-import checklist.args.def.SubcommandDef;
+import checklist.args.def.*;
+import checklist.args.val.ArgsBlockVal;
 import checklist.args.val.ArgsWithSubcommandVal;
 import checklist.args.val.PositionalArgVal;
 import checklist.args.val.SubcommandVal;
@@ -24,19 +18,19 @@ import io.vavr.collection.List;
 import io.vavr.collection.Seq;
 import io.vavr.control.Either;
 
+import java.io.File;
+
 public class App {
     public static final String CREATE_COMMAND = "create";
     public static final int ID_HASH_SIZE = 16;
     private static final ArgsDef<ArgsWithSubcommandVal> ARGS_DEF = createArgsDef();
+    public static final ArgsDef<ArgsBlockVal> CREATE_COMMAND_ARGS = new AllArgsDef<>(new ArgsBlockDef(
+            List.empty(),
+            List.of(new PositionalArgDef("path"))));
 
-    private static AllArgsDef<ArgsWithSubcommandVal, ArgsWithSubcommandDef> createArgsDef() {
-        List<SubcommandDef> subcommands = List.of(createCreateCommandDef());
-        return new AllArgsDef<>(new ArgsWithSubcommandDef(new ArgsBlockDef(), subcommands));
-    }
-
-    private static SubcommandDef createCreateCommandDef() {
-        List<PositionalArgDef> positional = List.of(new PositionalArgDef("path"));
-        return new SubcommandDef(CREATE_COMMAND, new ArgsBlockDef(List.empty(), positional));
+    private static ArgsDef<ArgsWithSubcommandVal> createArgsDef() {
+        List<SubcommandDef> subcommands = List.of(new SubcommandDef(CREATE_COMMAND));
+        return new ArgsWithSubcommandDef(new ArgsBlockDef(), subcommands);
     }
 
     private final InteractiveTextIO io;
@@ -65,7 +59,7 @@ public class App {
             SubcommandVal subcommand = parsedArgs._1.getSubcommand();
             String command = subcommand.getName();
             switch (command) {
-                case CREATE_COMMAND -> create(subcommand.getArgs().getPositional().map(PositionalArgVal::getValue));
+                case CREATE_COMMAND -> create(parsedArgs._2);
                 default -> {
                     io.showWarn("Unexpected command '%s'".formatted(command));
                     printHelp();
@@ -84,8 +78,10 @@ public class App {
         io.showWarn("no args");
     }
 
-    private void create(Seq<String> args) {
-        String path = args.head();
+    private void create(Seq<String> args) throws ArgParseException {
+        Tuple2<ArgsBlockVal, Seq<String>> parsed = CREATE_COMMAND_ARGS.parse(args);
+        Seq<PositionalArgVal> positional = parsed._1.getPositional();
+        String path = positional.head().getValue();
         String name = store.getName(path);
         String id = hashGenerator.next();
         Checklist checklist = new Checklist(id, name);
